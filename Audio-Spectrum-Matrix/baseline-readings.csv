@@ -1,0 +1,2817 @@
+band,level
+band 0,72
+band 1,86
+band 2,106
+band 3,105
+band 4,71
+band 5,91
+band 6,80
+average,87.29
+band 0,18
+band 1,98
+band 2,110
+band 3,130
+band 4,132
+band 5,120
+band 6,88
+average,99.43
+band 0,128
+band 1,113
+band 2,82
+band 3,70
+band 4,84
+band 5,109
+band 6,103
+average,98.43
+band 0,41
+band 1,121
+band 2,85
+band 3,83
+band 4,93
+band 5,105
+band 6,96
+average,89.14
+band 0,46
+band 1,109
+band 2,80
+band 3,78
+band 4,85
+band 5,94
+band 6,89
+average,83.00
+band 0,38
+band 1,99
+band 2,73
+band 3,72
+band 4,79
+band 5,89
+band 6,82
+average,76.00
+band 0,32
+band 1,93
+band 2,76
+band 3,71
+band 4,75
+band 5,83
+band 6,77
+average,72.43
+band 0,26
+band 1,85
+band 2,79
+band 3,69
+band 4,72
+band 5,79
+band 6,74
+average,69.14
+band 0,20
+band 1,80
+band 2,73
+band 3,65
+band 4,69
+band 5,74
+band 6,71
+average,64.57
+band 0,15
+band 1,74
+band 2,75
+band 3,62
+band 4,65
+band 5,72
+band 6,68
+average,61.57
+band 0,13
+band 1,69
+band 2,78
+band 3,59
+band 4,63
+band 5,68
+band 6,64
+average,59.14
+band 0,10
+band 1,73
+band 2,75
+band 3,60
+band 4,61
+band 5,65
+band 6,64
+average,58.29
+band 0,8
+band 1,71
+band 2,70
+band 3,59
+band 4,58
+band 5,63
+band 6,62
+average,55.86
+band 0,7
+band 1,68
+band 2,71
+band 3,58
+band 4,62
+band 5,64
+band 6,60
+average,55.71
+band 0,5
+band 1,69
+band 2,75
+band 3,59
+band 4,59
+band 5,64
+band 6,57
+average,55.43
+band 0,4
+band 1,74
+band 2,74
+band 3,63
+band 4,63
+band 5,63
+band 6,59
+average,57.14
+band 0,3
+band 1,71
+band 2,73
+band 3,61
+band 4,62
+band 5,62
+band 6,60
+average,56.00
+band 0,3
+band 1,71
+band 2,76
+band 3,60
+band 4,60
+band 5,63
+band 6,59
+average,56.00
+band 0,2
+band 1,67
+band 2,70
+band 3,60
+band 4,61
+band 5,65
+band 6,60
+average,55.00
+band 0,4
+band 1,69
+band 2,75
+band 3,61
+band 4,60
+band 5,63
+band 6,59
+average,55.86
+band 0,2
+band 1,70
+band 2,70
+band 3,59
+band 4,61
+band 5,63
+band 6,61
+average,55.14
+band 0,3
+band 1,71
+band 2,72
+band 3,59
+band 4,60
+band 5,65
+band 6,63
+average,56.14
+band 0,4
+band 1,72
+band 2,82
+band 3,59
+band 4,61
+band 5,64
+band 6,59
+average,57.29
+band 0,4
+band 1,70
+band 2,76
+band 3,62
+band 4,61
+band 5,62
+band 6,60
+average,56.43
+band 0,2
+band 1,70
+band 2,76
+band 3,58
+band 4,59
+band 5,66
+band 6,61
+average,56.00
+band 0,3
+band 1,95
+band 2,138
+band 3,65
+band 4,74
+band 5,78
+band 6,73
+average,75.14
+band 0,35
+band 1,100
+band 2,123
+band 3,63
+band 4,71
+band 5,75
+band 6,70
+average,76.71
+band 0,29
+band 1,91
+band 2,107
+band 3,60
+band 4,64
+band 5,69
+band 6,67
+average,69.57
+band 0,23
+band 1,85
+band 2,98
+band 3,59
+band 4,63
+band 5,69
+band 6,63
+average,65.71
+band 0,18
+band 1,81
+band 2,89
+band 3,59
+band 4,62
+band 5,70
+band 6,63
+average,63.14
+band 0,15
+band 1,75
+band 2,82
+band 3,58
+band 4,60
+band 5,67
+band 6,61
+average,59.71
+band 0,11
+band 1,72
+band 2,77
+band 3,64
+band 4,65
+band 5,65
+band 6,60
+average,59.14
+band 0,10
+band 1,73
+band 2,79
+band 3,60
+band 4,62
+band 5,64
+band 6,60
+average,58.29
+band 0,8
+band 1,76
+band 2,79
+band 3,59
+band 4,59
+band 5,68
+band 6,58
+average,58.14
+band 0,5
+band 1,70
+band 2,75
+band 3,60
+band 4,61
+band 5,66
+band 6,61
+average,56.86
+band 0,6
+band 1,72
+band 2,75
+band 3,59
+band 4,62
+band 5,65
+band 6,58
+average,56.71
+band 0,3
+band 1,76
+band 2,78
+band 3,59
+band 4,60
+band 5,65
+band 6,60
+average,57.29
+band 0,3
+band 1,71
+band 2,81
+band 3,59
+band 4,61
+band 5,62
+band 6,59
+average,56.57
+band 0,2
+band 1,70
+band 2,72
+band 3,58
+band 4,59
+band 5,66
+band 6,59
+average,55.14
+band 0,2
+band 1,74
+band 2,83
+band 3,59
+band 4,65
+band 5,62
+band 6,63
+average,58.29
+band 0,2
+band 1,69
+band 2,75
+band 3,60
+band 4,62
+band 5,67
+band 6,60
+average,56.43
+band 0,3
+band 1,71
+band 2,82
+band 3,59
+band 4,60
+band 5,64
+band 6,58
+average,56.71
+band 0,2
+band 1,76
+band 2,80
+band 3,57
+band 4,62
+band 5,63
+band 6,57
+average,56.71
+band 0,6
+band 1,71
+band 2,72
+band 3,59
+band 4,63
+band 5,68
+band 6,61
+average,57.14
+band 0,5
+band 1,74
+band 2,76
+band 3,61
+band 4,60
+band 5,64
+band 6,59
+average,57.00
+band 0,4
+band 1,71
+band 2,80
+band 3,59
+band 4,58
+band 5,64
+band 6,60
+average,56.57
+band 0,3
+band 1,73
+band 2,75
+band 3,58
+band 4,62
+band 5,65
+band 6,60
+average,56.57
+band 0,6
+band 1,70
+band 2,79
+band 3,60
+band 4,60
+band 5,63
+band 6,58
+average,56.57
+band 0,6
+band 1,75
+band 2,75
+band 3,59
+band 4,62
+band 5,63
+band 6,59
+average,57.00
+band 0,4
+band 1,72
+band 2,76
+band 3,61
+band 4,59
+band 5,65
+band 6,57
+average,56.29
+band 0,4
+band 1,72
+band 2,86
+band 3,58
+band 4,59
+band 5,63
+band 6,57
+average,57.00
+band 0,2
+band 1,68
+band 2,84
+band 3,60
+band 4,59
+band 5,63
+band 6,60
+average,56.57
+band 0,2
+band 1,73
+band 2,78
+band 3,59
+band 4,63
+band 5,64
+band 6,59
+average,56.86
+band 0,6
+band 1,70
+band 2,84
+band 3,58
+band 4,60
+band 5,65
+band 6,64
+average,58.14
+band 0,5
+band 1,74
+band 2,85
+band 3,57
+band 4,60
+band 5,65
+band 6,62
+average,58.29
+band 0,3
+band 1,69
+band 2,80
+band 3,60
+band 4,62
+band 5,64
+band 6,61
+average,57.00
+band 0,4
+band 1,71
+band 2,74
+band 3,58
+band 4,62
+band 5,65
+band 6,61
+average,56.43
+band 0,2
+band 1,69
+band 2,74
+band 3,58
+band 4,58
+band 5,67
+band 6,60
+average,55.43
+band 0,5
+band 1,73
+band 2,79
+band 3,60
+band 4,58
+band 5,64
+band 6,59
+average,56.86
+band 0,5
+band 1,74
+band 2,79
+band 3,60
+band 4,59
+band 5,65
+band 6,59
+average,57.29
+band 0,92
+band 1,78
+band 2,63
+band 3,79
+band 4,58
+band 5,69
+band 6,76
+average,73.57
+band 0,13
+band 1,79
+band 2,86
+band 3,80
+band 4,106
+band 5,89
+band 6,93
+average,78.00
+band 0,107
+band 1,86
+band 2,99
+band 3,63
+band 4,91
+band 5,88
+band 6,96
+average,90.00
+band 0,31
+band 1,94
+band 2,80
+band 3,79
+band 4,92
+band 5,105
+band 6,98
+average,82.71
+band 0,31
+band 1,84
+band 2,80
+band 3,73
+band 4,85
+band 5,95
+band 6,87
+average,76.43
+band 0,27
+band 1,82
+band 2,77
+band 3,70
+band 4,79
+band 5,87
+band 6,82
+average,72.00
+band 0,20
+band 1,77
+band 2,79
+band 3,68
+band 4,74
+band 5,82
+band 6,74
+average,67.71
+band 0,16
+band 1,78
+band 2,81
+band 3,65
+band 4,70
+band 5,76
+band 6,74
+average,65.71
+band 0,13
+band 1,72
+band 2,75
+band 3,63
+band 4,67
+band 5,75
+band 6,71
+average,62.29
+band 0,10
+band 1,70
+band 2,79
+band 3,62
+band 4,66
+band 5,71
+band 6,69
+average,61.00
+band 0,9
+band 1,70
+band 2,77
+band 3,60
+band 4,62
+band 5,66
+band 6,62
+average,58.00
+band 0,7
+band 1,73
+band 2,79
+band 3,58
+band 4,60
+band 5,66
+band 6,63
+average,58.00
+band 0,5
+band 1,75
+band 2,75
+band 3,60
+band 4,61
+band 5,63
+band 6,59
+average,56.86
+band 0,5
+band 1,69
+band 2,82
+band 3,58
+band 4,60
+band 5,64
+band 6,60
+average,56.86
+band 0,3
+band 1,73
+band 2,82
+band 3,58
+band 4,60
+band 5,64
+band 6,60
+average,57.14
+band 0,4
+band 1,72
+band 2,76
+band 3,59
+band 4,58
+band 5,68
+band 6,65
+average,57.43
+band 0,5
+band 1,72
+band 2,77
+band 3,59
+band 4,63
+band 5,65
+band 6,64
+average,57.86
+band 0,5
+band 1,70
+band 2,80
+band 3,62
+band 4,62
+band 5,66
+band 6,62
+average,58.14
+band 0,6
+band 1,74
+band 2,75
+band 3,61
+band 4,60
+band 5,65
+band 6,61
+average,57.43
+band 0,3
+band 1,71
+band 2,83
+band 3,58
+band 4,60
+band 5,65
+band 6,59
+average,57.00
+band 0,3
+band 1,72
+band 2,78
+band 3,60
+band 4,59
+band 5,64
+band 6,60
+average,56.57
+band 0,3
+band 1,70
+band 2,81
+band 3,60
+band 4,60
+band 5,63
+band 6,62
+average,57.00
+band 0,2
+band 1,75
+band 2,76
+band 3,58
+band 4,60
+band 5,68
+band 6,57
+average,56.57
+band 0,2
+band 1,71
+band 2,79
+band 3,63
+band 4,64
+band 5,67
+band 6,60
+average,58.00
+band 0,1
+band 1,74
+band 2,80
+band 3,61
+band 4,61
+band 5,65
+band 6,62
+average,57.71
+band 0,2
+band 1,69
+band 2,81
+band 3,60
+band 4,64
+band 5,64
+band 6,62
+average,57.43
+band 0,4
+band 1,79
+band 2,101
+band 3,64
+band 4,67
+band 5,80
+band 6,70
+average,66.43
+band 0,10
+band 1,75
+band 2,93
+band 3,62
+band 4,63
+band 5,75
+band 6,67
+average,63.57
+band 0,9
+band 1,69
+band 2,85
+band 3,60
+band 4,62
+band 5,74
+band 6,64
+average,60.43
+band 0,6
+band 1,72
+band 2,78
+band 3,60
+band 4,62
+band 5,67
+band 6,62
+average,58.14
+band 0,4
+band 1,76
+band 2,74
+band 3,58
+band 4,60
+band 5,66
+band 6,61
+average,57.00
+band 0,5
+band 1,72
+band 2,75
+band 3,61
+band 4,61
+band 5,65
+band 6,60
+average,57.00
+band 0,4
+band 1,78
+band 2,79
+band 3,64
+band 4,60
+band 5,61
+band 6,59
+average,57.86
+band 0,3
+band 1,74
+band 2,75
+band 3,62
+band 4,64
+band 5,64
+band 6,59
+average,57.29
+band 0,3
+band 1,73
+band 2,75
+band 3,59
+band 4,63
+band 5,62
+band 6,58
+average,56.14
+band 0,2
+band 1,70
+band 2,73
+band 3,59
+band 4,59
+band 5,67
+band 6,60
+average,55.71
+band 0,5
+band 1,73
+band 2,71
+band 3,58
+band 4,60
+band 5,65
+band 6,61
+average,56.14
+band 0,4
+band 1,75
+band 2,76
+band 3,60
+band 4,60
+band 5,62
+band 6,61
+average,56.86
+band 0,2
+band 1,69
+band 2,71
+band 3,58
+band 4,61
+band 5,63
+band 6,58
+average,54.57
+band 0,3
+band 1,73
+band 2,71
+band 3,61
+band 4,60
+band 5,65
+band 6,61
+average,56.29
+band 0,2
+band 1,69
+band 2,77
+band 3,60
+band 4,64
+band 5,66
+band 6,61
+average,57.00
+band 0,2
+band 1,73
+band 2,73
+band 3,58
+band 4,61
+band 5,65
+band 6,61
+average,56.14
+band 0,88
+band 1,82
+band 2,72
+band 3,92
+band 4,109
+band 5,100
+band 6,96
+average,91.29
+band 0,83
+band 1,82
+band 2,78
+band 3,90
+band 4,91
+band 5,108
+band 6,121
+average,93.29
+band 0,91
+band 1,77
+band 2,80
+band 3,104
+band 4,95
+band 5,96
+band 6,107
+average,92.86
+band 0,78
+band 1,70
+band 2,75
+band 3,93
+band 4,86
+band 5,85
+band 6,93
+average,82.86
+band 0,70
+band 1,73
+band 2,68
+band 3,84
+band 4,79
+band 5,77
+band 6,84
+average,76.43
+band 0,64
+band 1,74
+band 2,64
+band 3,75
+band 4,70
+band 5,71
+band 6,77
+average,70.71
+band 0,57
+band 1,65
+band 2,58
+band 3,69
+band 4,67
+band 5,66
+band 6,71
+average,64.71
+band 0,56
+band 1,67
+band 2,57
+band 3,64
+band 4,62
+band 5,62
+band 6,65
+average,61.86
+band 0,54
+band 1,68
+band 2,56
+band 3,58
+band 4,65
+band 5,57
+band 6,62
+average,60.00
+band 0,55
+band 1,71
+band 2,60
+band 3,61
+band 4,62
+band 5,57
+band 6,57
+average,60.43
+band 0,54
+band 1,77
+band 2,56
+band 3,58
+band 4,64
+band 5,58
+band 6,54
+average,60.14
+band 0,60
+band 1,69
+band 2,61
+band 3,58
+band 4,60
+band 5,54
+band 6,58
+average,60.00
+band 0,65
+band 1,69
+band 2,95
+band 3,81
+band 4,70
+band 5,97
+band 6,105
+average,83.14
+band 0,98
+band 1,125
+band 2,115
+band 3,86
+band 4,84
+band 5,89
+band 6,91
+average,98.29
+band 0,85
+band 1,111
+band 2,102
+band 3,76
+band 4,79
+band 5,92
+band 6,83
+average,89.71
+band 0,74
+band 1,97
+band 2,90
+band 3,71
+band 4,74
+band 5,84
+band 6,77
+average,81.00
+band 0,68
+band 1,87
+band 2,82
+band 3,73
+band 4,67
+band 5,75
+band 6,69
+average,74.43
+band 0,60
+band 1,76
+band 2,73
+band 3,73
+band 4,62
+band 5,69
+band 6,64
+average,68.14
+band 0,55
+band 1,71
+band 2,69
+band 3,71
+band 4,59
+band 5,62
+band 6,62
+average,64.14
+band 0,50
+band 1,65
+band 2,65
+band 3,71
+band 4,56
+band 5,62
+band 6,63
+average,61.71
+band 0,47
+band 1,60
+band 2,68
+band 3,64
+band 4,60
+band 5,56
+band 6,61
+average,59.43
+band 0,47
+band 1,56
+band 2,71
+band 3,68
+band 4,57
+band 5,58
+band 6,66
+average,60.43
+band 0,47
+band 1,56
+band 2,66
+band 3,71
+band 4,59
+band 5,57
+band 6,63
+average,59.86
+band 0,44
+band 1,54
+band 2,68
+band 3,71
+band 4,58
+band 5,58
+band 6,61
+average,59.14
+band 0,47
+band 1,59
+band 2,69
+band 3,69
+band 4,62
+band 5,60
+band 6,62
+average,61.14
+band 0,46
+band 1,56
+band 2,67
+band 3,72
+band 4,57
+band 5,58
+band 6,63
+average,59.86
+band 0,46
+band 1,52
+band 2,67
+band 3,68
+band 4,63
+band 5,56
+band 6,59
+average,58.71
+band 0,45
+band 1,54
+band 2,65
+band 3,67
+band 4,56
+band 5,56
+band 6,61
+average,57.71
+band 0,48
+band 1,55
+band 2,70
+band 3,69
+band 4,61
+band 5,58
+band 6,62
+average,60.43
+band 0,44
+band 1,53
+band 2,67
+band 3,71
+band 4,58
+band 5,58
+band 6,61
+average,58.86
+band 0,45
+band 1,52
+band 2,70
+band 3,73
+band 4,60
+band 5,61
+band 6,60
+average,60.14
+band 0,46
+band 1,56
+band 2,64
+band 3,71
+band 4,56
+band 5,56
+band 6,63
+average,58.86
+band 0,44
+band 1,55
+band 2,67
+band 3,67
+band 4,63
+band 5,57
+band 6,61
+average,59.14
+band 0,46
+band 1,56
+band 2,67
+band 3,71
+band 4,58
+band 5,55
+band 6,64
+average,59.57
+band 0,45
+band 1,60
+band 2,68
+band 3,70
+band 4,63
+band 5,57
+band 6,61
+average,60.57
+band 0,49
+band 1,59
+band 2,69
+band 3,69
+band 4,56
+band 5,61
+band 6,60
+average,60.43
+band 0,45
+band 1,57
+band 2,69
+band 3,73
+band 4,59
+band 5,57
+band 6,60
+average,60.00
+band 0,47
+band 1,59
+band 2,70
+band 3,73
+band 4,55
+band 5,59
+band 6,60
+average,60.43
+band 0,49
+band 1,56
+band 2,66
+band 3,72
+band 4,60
+band 5,58
+band 6,61
+average,60.29
+band 0,47
+band 1,56
+band 2,68
+band 3,75
+band 4,58
+band 5,59
+band 6,62
+average,60.71
+band 0,46
+band 1,56
+band 2,70
+band 3,71
+band 4,61
+band 5,60
+band 6,61
+average,60.71
+band 0,48
+band 1,55
+band 2,69
+band 3,71
+band 4,56
+band 5,62
+band 6,58
+average,59.86
+band 0,46
+band 1,57
+band 2,70
+band 3,66
+band 4,60
+band 5,59
+band 6,62
+average,60.00
+band 0,47
+band 1,60
+band 2,66
+band 3,72
+band 4,59
+band 5,58
+band 6,61
+average,60.43
+band 0,47
+band 1,56
+band 2,70
+band 3,74
+band 4,61
+band 5,60
+band 6,59
+average,61.00
+band 0,43
+band 1,58
+band 2,67
+band 3,66
+band 4,57
+band 5,56
+band 6,66
+average,59.00
+band 0,51
+band 1,59
+band 2,64
+band 3,73
+band 4,60
+band 5,59
+band 6,59
+average,60.71
+band 0,50
+band 1,55
+band 2,65
+band 3,71
+band 4,55
+band 5,57
+band 6,60
+average,59.00
+band 0,46
+band 1,57
+band 2,64
+band 3,72
+band 4,59
+band 5,55
+band 6,63
+average,59.43
+band 0,51
+band 1,55
+band 2,67
+band 3,75
+band 4,58
+band 5,57
+band 6,61
+average,60.57
+band 0,46
+band 1,57
+band 2,70
+band 3,73
+band 4,58
+band 5,57
+band 6,63
+average,60.57
+band 0,46
+band 1,56
+band 2,66
+band 3,67
+band 4,59
+band 5,58
+band 6,63
+average,59.29
+band 0,46
+band 1,53
+band 2,65
+band 3,78
+band 4,60
+band 5,60
+band 6,61
+average,60.43
+band 0,47
+band 1,56
+band 2,70
+band 3,71
+band 4,57
+band 5,58
+band 6,60
+average,59.86
+band 0,46
+band 1,59
+band 2,66
+band 3,67
+band 4,60
+band 5,56
+band 6,63
+average,59.57
+band 0,49
+band 1,56
+band 2,70
+band 3,63
+band 4,61
+band 5,58
+band 6,60
+average,59.57
+band 0,46
+band 1,59
+band 2,70
+band 3,72
+band 4,57
+band 5,60
+band 6,64
+average,61.14
+band 0,49
+band 1,58
+band 2,67
+band 3,76
+band 4,62
+band 5,59
+band 6,63
+average,62.00
+band 0,44
+band 1,54
+band 2,69
+band 3,70
+band 4,58
+band 5,56
+band 6,61
+average,58.86
+band 0,49
+band 1,53
+band 2,70
+band 3,73
+band 4,61
+band 5,59
+band 6,62
+average,61.00
+band 0,43
+band 1,56
+band 2,68
+band 3,73
+band 4,57
+band 5,58
+band 6,62
+average,59.57
+band 0,49
+band 1,54
+band 2,71
+band 3,68
+band 4,60
+band 5,58
+band 6,61
+average,60.14
+band 0,50
+band 1,58
+band 2,66
+band 3,70
+band 4,55
+band 5,59
+band 6,63
+average,60.14
+band 0,47
+band 1,55
+band 2,67
+band 3,66
+band 4,60
+band 5,59
+band 6,63
+average,59.57
+band 0,47
+band 1,58
+band 2,66
+band 3,68
+band 4,58
+band 5,60
+band 6,61
+average,59.71
+band 0,47
+band 1,55
+band 2,69
+band 3,69
+band 4,61
+band 5,59
+band 6,62
+average,60.29
+band 0,48
+band 1,55
+band 2,71
+band 3,71
+band 4,58
+band 5,61
+band 6,62
+average,60.86
+band 0,45
+band 1,59
+band 2,72
+band 3,73
+band 4,60
+band 5,58
+band 6,61
+average,61.14
+band 0,51
+band 1,57
+band 2,69
+band 3,69
+band 4,59
+band 5,58
+band 6,61
+average,60.57
+band 0,48
+band 1,55
+band 2,71
+band 3,70
+band 4,62
+band 5,60
+band 6,62
+average,61.14
+band 0,49
+band 1,58
+band 2,66
+band 3,63
+band 4,58
+band 5,61
+band 6,63
+average,59.71
+band 0,46
+band 1,53
+band 2,68
+band 3,66
+band 4,61
+band 5,61
+band 6,61
+average,59.43
+band 0,46
+band 1,56
+band 2,69
+band 3,66
+band 4,57
+band 5,59
+band 6,60
+average,59.00
+band 0,48
+band 1,62
+band 2,65
+band 3,71
+band 4,60
+band 5,57
+band 6,61
+average,60.57
+band 0,48
+band 1,58
+band 2,68
+band 3,74
+band 4,58
+band 5,57
+band 6,58
+average,60.14
+band 0,46
+band 1,53
+band 2,67
+band 3,71
+band 4,59
+band 5,59
+band 6,62
+average,59.57
+band 0,46
+band 1,52
+band 2,66
+band 3,71
+band 4,56
+band 5,58
+band 6,62
+average,58.71
+band 0,47
+band 1,56
+band 2,66
+band 3,68
+band 4,62
+band 5,60
+band 6,60
+average,59.86
+band 0,45
+band 1,57
+band 2,67
+band 3,70
+band 4,56
+band 5,57
+band 6,62
+average,59.14
+band 0,47
+band 1,55
+band 2,68
+band 3,74
+band 4,61
+band 5,57
+band 6,64
+average,60.86
+band 0,47
+band 1,56
+band 2,67
+band 3,67
+band 4,56
+band 5,60
+band 6,61
+average,59.14
+band 0,46
+band 1,55
+band 2,65
+band 3,68
+band 4,62
+band 5,59
+band 6,60
+average,59.29
+band 0,47
+band 1,59
+band 2,68
+band 3,67
+band 4,57
+band 5,59
+band 6,62
+average,59.86
+band 0,47
+band 1,54
+band 2,70
+band 3,69
+band 4,59
+band 5,56
+band 6,61
+average,59.43
+band 0,45
+band 1,60
+band 2,67
+band 3,78
+band 4,56
+band 5,56
+band 6,62
+average,60.57
+band 0,47
+band 1,52
+band 2,69
+band 3,71
+band 4,61
+band 5,59
+band 6,60
+average,59.86
+band 0,48
+band 1,54
+band 2,70
+band 3,72
+band 4,56
+band 5,62
+band 6,62
+average,60.57
+band 0,45
+band 1,54
+band 2,67
+band 3,69
+band 4,59
+band 5,61
+band 6,64
+average,59.86
+band 0,45
+band 1,54
+band 2,68
+band 3,70
+band 4,58
+band 5,63
+band 6,62
+average,60.00
+band 0,56
+band 1,54
+band 2,68
+band 3,67
+band 4,59
+band 5,57
+band 6,64
+average,60.71
+band 0,49
+band 1,53
+band 2,68
+band 3,66
+band 4,57
+band 5,59
+band 6,62
+average,59.14
+band 0,48
+band 1,57
+band 2,72
+band 3,67
+band 4,59
+band 5,59
+band 6,60
+average,60.29
+band 0,44
+band 1,56
+band 2,69
+band 3,67
+band 4,57
+band 5,58
+band 6,62
+average,59.00
+band 0,46
+band 1,57
+band 2,66
+band 3,69
+band 4,60
+band 5,55
+band 6,62
+average,59.29
+band 0,44
+band 1,57
+band 2,67
+band 3,63
+band 4,57
+band 5,59
+band 6,61
+average,58.29
+band 0,46
+band 1,53
+band 2,70
+band 3,66
+band 4,60
+band 5,59
+band 6,62
+average,59.43
+band 0,48
+band 1,53
+band 2,69
+band 3,69
+band 4,55
+band 5,58
+band 6,62
+average,59.14
+band 0,49
+band 1,57
+band 2,69
+band 3,70
+band 4,60
+band 5,55
+band 6,59
+average,59.86
+band 0,49
+band 1,54
+band 2,65
+band 3,70
+band 4,57
+band 5,59
+band 6,63
+average,59.57
+band 0,45
+band 1,57
+band 2,66
+band 3,65
+band 4,61
+band 5,57
+band 6,60
+average,58.71
+band 0,47
+band 1,54
+band 2,70
+band 3,70
+band 4,56
+band 5,60
+band 6,61
+average,59.71
+band 0,47
+band 1,54
+band 2,67
+band 3,72
+band 4,59
+band 5,57
+band 6,62
+average,59.71
+band 0,47
+band 1,50
+band 2,67
+band 3,70
+band 4,56
+band 5,57
+band 6,62
+average,58.43
+band 0,44
+band 1,57
+band 2,71
+band 3,69
+band 4,60
+band 5,57
+band 6,61
+average,59.86
+band 0,45
+band 1,58
+band 2,66
+band 3,70
+band 4,56
+band 5,59
+band 6,59
+average,59.00
+band 0,43
+band 1,55
+band 2,66
+band 3,68
+band 4,61
+band 5,59
+band 6,62
+average,59.14
+band 0,45
+band 1,54
+band 2,74
+band 3,67
+band 4,56
+band 5,58
+band 6,60
+average,59.14
+band 0,45
+band 1,55
+band 2,74
+band 3,68
+band 4,60
+band 5,59
+band 6,61
+average,60.29
+band 0,46
+band 1,53
+band 2,71
+band 3,70
+band 4,56
+band 5,60
+band 6,60
+average,59.43
+band 0,48
+band 1,53
+band 2,70
+band 3,72
+band 4,60
+band 5,58
+band 6,62
+average,60.43
+band 0,49
+band 1,56
+band 2,67
+band 3,66
+band 4,59
+band 5,59
+band 6,60
+average,59.43
+band 0,48
+band 1,53
+band 2,68
+band 3,74
+band 4,60
+band 5,59
+band 6,64
+average,60.86
+band 0,45
+band 1,55
+band 2,75
+band 3,66
+band 4,57
+band 5,57
+band 6,63
+average,59.71
+band 0,49
+band 1,58
+band 2,69
+band 3,66
+band 4,60
+band 5,60
+band 6,61
+average,60.43
+band 0,48
+band 1,54
+band 2,65
+band 3,70
+band 4,57
+band 5,60
+band 6,62
+average,59.43
+band 0,46
+band 1,60
+band 2,70
+band 3,71
+band 4,62
+band 5,58
+band 6,61
+average,61.14
+band 0,48
+band 1,56
+band 2,69
+band 3,69
+band 4,56
+band 5,58
+band 6,61
+average,59.57
+band 0,46
+band 1,54
+band 2,73
+band 3,77
+band 4,60
+band 5,56
+band 6,63
+average,61.29
+band 0,49
+band 1,59
+band 2,65
+band 3,70
+band 4,56
+band 5,55
+band 6,62
+average,59.43
+band 0,45
+band 1,56
+band 2,68
+band 3,70
+band 4,60
+band 5,58
+band 6,61
+average,59.71
+band 0,43
+band 1,55
+band 2,65
+band 3,65
+band 4,56
+band 5,63
+band 6,63
+average,58.57
+band 0,45
+band 1,56
+band 2,68
+band 3,72
+band 4,60
+band 5,56
+band 6,62
+average,59.86
+band 0,50
+band 1,55
+band 2,68
+band 3,68
+band 4,58
+band 5,57
+band 6,58
+average,59.14
+band 0,47
+band 1,54
+band 2,70
+band 3,66
+band 4,60
+band 5,58
+band 6,62
+average,59.57
+band 0,47
+band 1,57
+band 2,76
+band 3,68
+band 4,57
+band 5,56
+band 6,66
+average,61.00
+band 0,45
+band 1,56
+band 2,69
+band 3,67
+band 4,60
+band 5,59
+band 6,60
+average,59.43
+band 0,48
+band 1,55
+band 2,68
+band 3,69
+band 4,55
+band 5,59
+band 6,60
+average,59.14
+band 0,46
+band 1,57
+band 2,69
+band 3,71
+band 4,60
+band 5,61
+band 6,59
+average,60.43
+band 0,47
+band 1,52
+band 2,68
+band 3,70
+band 4,56
+band 5,59
+band 6,61
+average,59.00
+band 0,42
+band 1,59
+band 2,67
+band 3,69
+band 4,60
+band 5,61
+band 6,61
+average,59.86
+band 0,47
+band 1,59
+band 2,68
+band 3,69
+band 4,60
+band 5,57
+band 6,63
+average,60.43
+band 0,45
+band 1,55
+band 2,70
+band 3,70
+band 4,56
+band 5,59
+band 6,62
+average,59.57
+band 0,49
+band 1,58
+band 2,71
+band 3,75
+band 4,61
+band 5,57
+band 6,61
+average,61.71
+band 0,46
+band 1,59
+band 2,66
+band 3,66
+band 4,56
+band 5,59
+band 6,60
+average,58.86
+band 0,45
+band 1,55
+band 2,68
+band 3,73
+band 4,58
+band 5,62
+band 6,62
+average,60.43
+band 0,47
+band 1,61
+band 2,70
+band 3,66
+band 4,59
+band 5,57
+band 6,65
+average,60.71
+band 0,48
+band 1,56
+band 2,70
+band 3,76
+band 4,61
+band 5,56
+band 6,64
+average,61.57
+band 0,48
+band 1,58
+band 2,69
+band 3,69
+band 4,58
+band 5,59
+band 6,59
+average,60.00
+band 0,49
+band 1,54
+band 2,69
+band 3,68
+band 4,59
+band 5,61
+band 6,62
+average,60.29
+band 0,45
+band 1,61
+band 2,68
+band 3,71
+band 4,55
+band 5,58
+band 6,61
+average,59.86
+band 0,44
+band 1,54
+band 2,67
+band 3,72
+band 4,60
+band 5,59
+band 6,61
+average,59.57
+band 0,46
+band 1,57
+band 2,73
+band 3,69
+band 4,55
+band 5,57
+band 6,62
+average,59.86
+band 0,47
+band 1,58
+band 2,64
+band 3,70
+band 4,62
+band 5,59
+band 6,61
+average,60.14
+band 0,46
+band 1,56
+band 2,66
+band 3,74
+band 4,57
+band 5,61
+band 6,63
+average,60.43
+band 0,47
+band 1,58
+band 2,72
+band 3,67
+band 4,61
+band 5,57
+band 6,62
+average,60.57
+band 0,48
+band 1,54
+band 2,66
+band 3,73
+band 4,56
+band 5,56
+band 6,62
+average,59.29
+band 0,47
+band 1,56
+band 2,66
+band 3,74
+band 4,61
+band 5,59
+band 6,63
+average,60.86
+band 0,45
+band 1,53
+band 2,67
+band 3,68
+band 4,58
+band 5,60
+band 6,61
+average,58.86
+band 0,47
+band 1,55
+band 2,67
+band 3,69
+band 4,58
+band 5,56
+band 6,63
+average,59.29
+band 0,44
+band 1,52
+band 2,71
+band 3,70
+band 4,58
+band 5,58
+band 6,62
+average,59.29
+band 0,51
+band 1,54
+band 2,68
+band 3,75
+band 4,60
+band 5,59
+band 6,63
+average,61.43
+band 0,48
+band 1,56
+band 2,65
+band 3,67
+band 4,59
+band 5,61
+band 6,61
+average,59.57
+band 0,46
+band 1,55
+band 2,66
+band 3,70
+band 4,62
+band 5,58
+band 6,61
+average,59.71
+band 0,46
+band 1,57
+band 2,65
+band 3,72
+band 4,57
+band 5,58
+band 6,62
+average,59.57
+band 0,48
+band 1,57
+band 2,67
+band 3,71
+band 4,61
+band 5,58
+band 6,63
+average,60.71
+band 0,47
+band 1,53
+band 2,69
+band 3,70
+band 4,58
+band 5,59
+band 6,64
+average,60.00
+band 0,45
+band 1,56
+band 2,69
+band 3,68
+band 4,61
+band 5,59
+band 6,62
+average,60.00
+band 0,50
+band 1,59
+band 2,67
+band 3,68
+band 4,57
+band 5,55
+band 6,62
+average,59.71
+band 0,50
+band 1,57
+band 2,68
+band 3,71
+band 4,60
+band 5,62
+band 6,63
+average,61.57
+band 0,47
+band 1,57
+band 2,73
+band 3,67
+band 4,56
+band 5,59
+band 6,61
+average,60.00
+band 0,48
+band 1,55
+band 2,65
+band 3,70
+band 4,61
+band 5,58
+band 6,61
+average,59.71
+band 0,49
+band 1,56
+band 2,68
+band 3,70
+band 4,58
+band 5,61
+band 6,62
+average,60.57
+band 0,47
+band 1,57
+band 2,68
+band 3,70
+band 4,60
+band 5,60
+band 6,60
+average,60.29
+band 0,48
+band 1,50
+band 2,68
+band 3,65
+band 4,58
+band 5,56
+band 6,61
+average,58.00
+band 0,48
+band 1,54
+band 2,72
+band 3,66
+band 4,62
+band 5,60
+band 6,64
+average,60.86
+band 0,48
+band 1,58
+band 2,66
+band 3,69
+band 4,56
+band 5,58
+band 6,60
+average,59.29
+band 0,47
+band 1,55
+band 2,70
+band 3,76
+band 4,60
+band 5,58
+band 6,60
+average,60.86
+band 0,46
+band 1,56
+band 2,67
+band 3,68
+band 4,57
+band 5,59
+band 6,60
+average,59.00
+band 0,46
+band 1,58
+band 2,68
+band 3,71
+band 4,60
+band 5,58
+band 6,59
+average,60.00
+band 0,45
+band 1,55
+band 2,71
+band 3,73
+band 4,54
+band 5,58
+band 6,60
+average,59.43
+band 0,45
+band 1,56
+band 2,70
+band 3,71
+band 4,61
+band 5,60
+band 6,62
+average,60.71
+band 0,44
+band 1,61
+band 2,67
+band 3,71
+band 4,58
+band 5,58
+band 6,59
+average,59.71
+band 0,47
+band 1,55
+band 2,71
+band 3,68
+band 4,59
+band 5,58
+band 6,62
+average,60.00
+band 0,47
+band 1,59
+band 2,64
+band 3,71
+band 4,55
+band 5,58
+band 6,62
+average,59.43
+band 0,51
+band 1,56
+band 2,67
+band 3,67
+band 4,60
+band 5,59
+band 6,62
+average,60.29
+band 0,48
+band 1,58
+band 2,65
+band 3,74
+band 4,58
+band 5,60
+band 6,60
+average,60.43
+band 0,46
+band 1,54
+band 2,67
+band 3,71
+band 4,60
+band 5,57
+band 6,62
+average,59.57
+band 0,45
+band 1,59
+band 2,68
+band 3,72
+band 4,56
+band 5,56
+band 6,62
+average,59.71
+band 0,50
+band 1,56
+band 2,69
+band 3,72
+band 4,60
+band 5,58
+band 6,62
+average,61.00
+band 0,45
+band 1,54
+band 2,67
+band 3,72
+band 4,55
+band 5,55
+band 6,63
+average,58.71
+band 0,47
+band 1,55
+band 2,68
+band 3,72
+band 4,63
+band 5,57
+band 6,63
+average,60.71
+band 0,48
+band 1,59
+band 2,69
+band 3,76
+band 4,56
+band 5,58
+band 6,61
+average,61.00
+band 0,45
+band 1,56
+band 2,67
+band 3,69
+band 4,58
+band 5,58
+band 6,61
+average,59.14
+band 0,49
+band 1,55
+band 2,70
+band 3,73
+band 4,56
+band 5,60
+band 6,60
+average,60.43
+band 0,46
+band 1,53
+band 2,65
+band 3,66
+band 4,61
+band 5,57
+band 6,59
+average,58.14
+band 0,47
+band 1,54
+band 2,68
+band 3,69
+band 4,57
+band 5,59
+band 6,63
+average,59.57
+band 0,48
+band 1,58
+band 2,70
+band 3,72
+band 4,62
+band 5,58
+band 6,63
+average,61.57
+band 0,46
+band 1,53
+band 2,68
+band 3,67
+band 4,58
+band 5,60
+band 6,60
+average,58.86
+band 0,48
+band 1,56
+band 2,69
+band 3,72
+band 4,59
+band 5,57
+band 6,63
+average,60.57
+band 0,45
+band 1,55
+band 2,72
+band 3,71
+band 4,56
+band 5,58
+band 6,62
+average,59.86
+band 0,47
+band 1,55
+band 2,65
+band 3,70
+band 4,60
+band 5,56
+band 6,63
+average,59.43
+band 0,51
+band 1,58
+band 2,65
+band 3,73
+band 4,57
+band 5,59
+band 6,60
+average,60.43
+band 0,49
+band 1,53
+band 2,66
+band 3,68
+band 4,62
+band 5,62
+band 6,62
+average,60.29
+band 0,46
+band 1,57
+band 2,65
+band 3,69
+band 4,58
+band 5,57
+band 6,60
+average,58.86
+band 0,47
+band 1,61
+band 2,69
+band 3,69
+band 4,61
+band 5,62
+band 6,62
+average,61.57
+band 0,49
+band 1,57
+band 2,64
+band 3,73
+band 4,59
+band 5,58
+band 6,60
+average,60.00
+band 0,47
+band 1,56
+band 2,65
+band 3,73
+band 4,61
+band 5,58
+band 6,61
+average,60.14
+band 0,47
+band 1,55
+band 2,67
+band 3,65
+band 4,59
+band 5,59
+band 6,60
+average,58.86
+band 0,47
+band 1,54
+band 2,66
+band 3,69
+band 4,63
+band 5,60
+band 6,62
+average,60.14
+band 0,47
+band 1,56
+band 2,70
+band 3,68
+band 4,58
+band 5,59
+band 6,61
+average,59.86
+band 0,44
+band 1,59
+band 2,72
+band 3,72
+band 4,61
+band 5,59
+band 6,59
+average,60.86
+band 0,45
+band 1,54
+band 2,74
+band 3,75
+band 4,56
+band 5,58
+band 6,61
+average,60.43
+band 0,49
+band 1,57
+band 2,67
+band 3,68
+band 4,63
+band 5,59
+band 6,62
+average,60.71
+band 0,45
+band 1,56
+band 2,75
+band 3,75
+band 4,57
+band 5,57
+band 6,61
+average,60.86
+band 0,44
+band 1,56
+band 2,73
+band 3,68
+band 4,60
+band 5,61
+band 6,60
+average,60.29
+band 0,47
+band 1,59
+band 2,67
+band 3,69
+band 4,57
+band 5,58
+band 6,61
+average,59.71
+band 0,44
+band 1,57
+band 2,68
+band 3,72
+band 4,60
+band 5,62
+band 6,62
+average,60.71
+band 0,48
+band 1,57
+band 2,66
+band 3,66
+band 4,57
+band 5,59
+band 6,65
+average,59.71
+band 0,46
+band 1,53
+band 2,70
+band 3,69
+band 4,60
+band 5,58
+band 6,60
+average,59.43
+band 0,44
+band 1,56
+band 2,65
+band 3,72
+band 4,56
+band 5,57
+band 6,62
+average,58.86
+band 0,45
+band 1,61
+band 2,69
+band 3,67
+band 4,59
+band 5,61
+band 6,64
+average,60.86
+band 0,48
+band 1,56
+band 2,70
+band 3,70
+band 4,56
+band 5,62
+band 6,62
+average,60.57
+band 0,48
+band 1,57
+band 2,70
+band 3,66
+band 4,61
+band 5,60
+band 6,60
+average,60.29
+band 0,46
+band 1,58
+band 2,69
+band 3,67
+band 4,55
+band 5,57
+band 6,65
+average,59.57
+band 0,44
+band 1,56
+band 2,70
+band 3,70
+band 4,58
+band 5,60
+band 6,64
+average,60.29
+band 0,47
+band 1,57
+band 2,69
+band 3,64
+band 4,57
+band 5,57
+band 6,62
+average,59.00
+band 0,45
+band 1,55
+band 2,70
+band 3,66
+band 4,63
+band 5,60
+band 6,61
+average,60.00
+band 0,45
+band 1,55
+band 2,64
+band 3,65
+band 4,57
+band 5,57
+band 6,61
+average,57.71
+band 0,47
+band 1,57
+band 2,68
+band 3,65
+band 4,60
+band 5,58
+band 6,61
+average,59.43
+band 0,47
+band 1,52
+band 2,70
+band 3,69
+band 4,55
+band 5,60
+band 6,66
+average,59.86
+band 0,47
+band 1,57
+band 2,71
+band 3,71
+band 4,59
+band 5,56
+band 6,61
+average,60.29
+band 0,46
+band 1,55
+band 2,67
+band 3,73
+band 4,58
+band 5,59
+band 6,60
+average,59.71
+band 0,48
+band 1,55
+band 2,70
+band 3,65
+band 4,61
+band 5,58
+band 6,60
+average,59.57
+band 0,46
+band 1,55
+band 2,70
+band 3,70
+band 4,58
+band 5,59
+band 6,61
+average,59.86
+band 0,47
+band 1,53
+band 2,73
+band 3,68
+band 4,59
+band 5,62
+band 6,60
+average,60.29
+band 0,43
+band 1,57
+band 2,75
+band 3,78
+band 4,56
+band 5,60
+band 6,63
+average,61.71
+band 0,45
+band 1,56
+band 2,66
+band 3,72
+band 4,60
+band 5,58
+band 6,61
+average,59.71
+band 0,49
+band 1,57
+band 2,66
+band 3,71
+band 4,57
+band 5,59
+band 6,62
+average,60.14
+band 0,48
+band 1,52
+band 2,70
+band 3,69
+band 4,61
+band 5,58
+band 6,62
+average,60.00
+band 0,48
+band 1,56
+band 2,73
+band 3,68
+band 4,57
+band 5,60
+band 6,62
+average,60.57
+band 0,45
+band 1,54
+band 2,72
+band 3,76
+band 4,60
+band 5,59
+band 6,60
+average,60.86
+band 0,45
+band 1,52
+band 2,70
+band 3,70
+band 4,57
+band 5,60
+band 6,60
+average,59.14
+band 0,47
+band 1,51
+band 2,69
+band 3,73
+band 4,59
+band 5,59
+band 6,60
+average,59.71
+band 0,46
+band 1,56
+band 2,68
+band 3,73
+band 4,56
+band 5,57
+band 6,64
+average,60.00
+band 0,46
+band 1,55
+band 2,70
+band 3,73
+band 4,59
+band 5,57
+band 6,65
+average,60.71
+band 0,48
+band 1,57
+band 2,71
+band 3,70
+band 4,56
+band 5,59
+band 6,62
+average,60.43
+band 0,46
+band 1,59
+band 2,69
+band 3,67
+band 4,60
+band 5,57
+band 6,62
+average,60.00
+band 0,49
+band 1,55
+band 2,71
+band 3,67
+band 4,55
+band 5,60
+band 6,61
+average,59.71
+band 0,49
+band 1,56
+band 2,71
+band 3,67
+band 4,60
+band 5,59
+band 6,62
+average,60.57
+band 0,46
+band 1,54
+band 2,65
+band 3,69
+band 4,57
+band 5,58
+band 6,63
+average,58.86
+band 0,49
+band 1,57
+band 2,68
+band 3,63
+band 4,62
+band 5,59
+band 6,59
+average,59.57
+band 0,45
+band 1,54
+band 2,67
+band 3,75
+band 4,56
+band 5,61
+band 6,62
+average,60.00
+band 0,48
+band 1,57
+band 2,70
+band 3,71
+band 4,61
+band 5,55
+band 6,61
+average,60.43
+band 0,47
+band 1,56
+band 2,65
+band 3,70
+band 4,59
+band 5,57
+band 6,60
+average,59.14
+band 0,46
+band 1,56
+band 2,71
+band 3,76
+band 4,61
+band 5,59
+band 6,59
+average,61.14
+band 0,47
+band 1,55
+band 2,68
+band 3,69
+band 4,57
+band 5,57
+band 6,62
+average,59.29
+band 0,51
+band 1,55
+band 2,69
+band 3,69
+band 4,61
+band 5,58
+band 6,61
+average,60.57
+band 0,47
+band 1,57
+band 2,67
+band 3,73
+band 4,57
+band 5,57
+band 6,63
+average,60.14
+band 0,46
+band 1,56
+band 2,70
+band 3,65
+band 4,61
+band 5,57
+band 6,63
+average,59.71
+band 0,48
+band 1,58
+band 2,70
+band 3,65
+band 4,57
+band 5,58
+band 6,63
+average,59.86
