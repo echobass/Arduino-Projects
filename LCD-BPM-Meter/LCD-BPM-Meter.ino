@@ -32,6 +32,7 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
  * - Only update bpm on button press
  * - Indicator for reset/hold
  * - Ignore simultaneous clicks?
+ * - Exponential or weighted moving average (probably more realistic)
  */
 
 // Min BPM: 50 (1.2s) ?
@@ -49,10 +50,7 @@ unsigned long LAST_BEAT = 0;
 unsigned long LAST_BEAT_PRESS = 0;
 uint8_t LAST_BUTTONS = 0;
 
-boolean HAVE_BEAT = false;
-
 unsigned int BEAT_TIME = 0;
-unsigned long NEXT_BEAT_MILLIS = 0;
 unsigned long NEXT_BEAT_MILLIS_LOW = 0;
 unsigned long NEXT_BEAT_MILLIS_HIGH = 0;
 
@@ -86,7 +84,7 @@ void drawBpm() {
   lcd.setCursor(1, 0);
   lcd.print("     ");
   lcd.setCursor(1, 0);
-  if (HAVE_BEAT) {
+  if (TRAILING_BPM > 0) {
     lcd.print(TRAILING_BPM, 1);
   } else {
     lcd.print("000.0");
@@ -104,21 +102,18 @@ void resetBpm() {
   BPM = 0.0;
   TRAILING_BPM = 0.0;
   TRAILING_COUNT = 0;
-  HAVE_BEAT = false;
   LAST_BEAT = 0;
-  NEXT_BEAT_MILLIS = 0;
+  NEXT_BEAT_MILLIS_LOW = 0;
+  NEXT_BEAT_MILLIS_HIGH = 0;
 }
 
 void updateBeat() {
-  if (NOW > NEXT_BEAT_MILLIS_HIGH) {
-    LAST_BEAT = NOW;
-    NEXT_BEAT_MILLIS = LAST_BEAT + BEAT_TIME;
-    NEXT_BEAT_MILLIS_LOW = NEXT_BEAT_MILLIS - BEAT_WINDOW_MS;
-    NEXT_BEAT_MILLIS_HIGH = NEXT_BEAT_MILLIS + BEAT_WINDOW_MS;
-  }
+  LAST_BEAT += BEAT_TIME;
+  NEXT_BEAT_MILLIS_LOW = LAST_BEAT + BEAT_TIME - BEAT_WINDOW_MS;
+  NEXT_BEAT_MILLIS_HIGH = LAST_BEAT + BEAT_TIME + BEAT_WINDOW_MS;
 }
 
-void updateBpm() {
+void updateBpm() {\
   // handle special cases
   if (LAST_BEAT_PRESS == 0) { // First press on startup
     resetBpm();
@@ -138,9 +133,9 @@ void updateBpm() {
 
   // And we go!
   BEAT_TIME = (60.0 / TRAILING_BPM) * 1000;
-  HAVE_BEAT = true;
-  LAST_BEAT_PRESS = NOW;
   LAST_BEAT = NOW;
+  NEXT_BEAT_MILLIS_LOW = NOW + BEAT_TIME - BEAT_WINDOW_MS;
+  NEXT_BEAT_MILLIS_HIGH = NOW + BEAT_TIME + BEAT_WINDOW_MS;
 }
 
 /* *************** INPUT ************************************ */
@@ -151,6 +146,7 @@ void handleButtons(uint8_t buttons) {
     } else { // New Press
       updateBpm();
       drawBpm();
+      LAST_BEAT_PRESS = NOW;
     }
   }
   if (buttons & BUTTON_DOWN) { // Down Button
@@ -158,6 +154,7 @@ void handleButtons(uint8_t buttons) {
     } else { // New Press
       updateBpm();
       drawBpm();
+      LAST_BEAT_PRESS = NOW;
     }
   }
   if (buttons & BUTTON_LEFT) { // Left Button
@@ -165,6 +162,7 @@ void handleButtons(uint8_t buttons) {
     } else { // New Press
       updateBpm();
       drawBpm();
+      LAST_BEAT_PRESS = NOW;
     }
   }
   if (buttons & BUTTON_RIGHT) { // Right Button
@@ -172,6 +170,7 @@ void handleButtons(uint8_t buttons) {
     } else { // New Press
       updateBpm();
       drawBpm();
+      LAST_BEAT_PRESS = NOW;
     }
   }
   if (buttons & BUTTON_SELECT) { // Select Button
@@ -196,14 +195,17 @@ void loop() {
   LAST_BUTTONS = buttons;
 
   // Do things!
-  if (HAVE_BEAT) {
-    updateBeat();
-
+  if (TRAILING_BPM > 0) {
     // Flash the beat indicator
-    if ((NOW > NEXT_BEAT_MILLIS_LOW) && (NOW <= NEXT_BEAT_MILLIS_HIGH)) { // Within range for beat indicator
+    if ((NOW > NEXT_BEAT_MILLIS_LOW) && (NOW <= NEXT_BEAT_MILLIS_HIGH)) {
       drawBeat();
     } else {
       hideBeat();
+    }
+
+    // Update the last beat if we've moved past it
+    if (NOW > NEXT_BEAT_MILLIS_HIGH) {
+      updateBeat();
     }
 
     // Render the RESET message maybe
