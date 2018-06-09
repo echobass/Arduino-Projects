@@ -21,6 +21,14 @@
  * - Random flash/sparkle effect
  */
 
+/*
+ * BUGS?
+ * - Orange band drawing red?
+ *    Centerline
+ *    Colour per band
+ *    Always draw center = false
+ */
+
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
 
@@ -29,15 +37,15 @@
 // Behaviour configuration
 #define DELAY_MS 25 // Set above 0 to delay some milliseconds, messes with spectrum measurements for some reason?
 #define LEVEL_REDUCTION 120 // Flat reduction for all audio band levels, accounts for background and internal noise
-#define SENSITIVITY 50 // 0 No Sensitivity (Off) -> 50 Ideal/Center - 100 High
+#define SENSITIVITY 100 // 0 No Sensitivity (Off) -> 50 Ideal/Center - 100 High
 
 // Logging configuration
 #define LOGGING_ENABLED false // Logs to Serial 9600, slows things down though
-#define TICKS_BETWEEN_LOGS 1000 // Set above 0 to only log every so ticks
+#define TICKS_BETWEEN_LOGS 200 // Set above 0 to only log every so ticks
 
 // Display configuration
 #define MIC_OVERRIDE true // Set to true to use mic instead of audio in
-#define BRIGHTNESS 10 // Set the overall brightness; Low values will affect colours
+#define BRIGHTNESS 30 // Set the overall brightness; Low values will affect colours
 
 // Matrix specs
 #define COLUMNS 8 // Width
@@ -131,8 +139,6 @@ void readSpectrum() {
     digitalWrite(PIN_SPECTRUM_STROBE, HIGH);
     digitalWrite(PIN_SPECTRUM_STROBE, LOW);
 
-    spectrum[band] = spectrum[band];
-
     // Increment the sum for this frame
     spectrumSum = spectrumSum + spectrum[band];
 
@@ -173,6 +179,22 @@ void logSpectrum() {
   Serial.print("average: ");
   Serial.print(spectrumAverage);
   Serial.print("\n");
+}
+
+void resetAnalyzer() {
+  pinMode(PIN_SPECTRUM_RESET, OUTPUT);
+  pinMode(PIN_SPECTRUM_STROBE, OUTPUT);
+  digitalWrite(PIN_SPECTRUM_STROBE, LOW);
+  delay(1);
+  digitalWrite(PIN_SPECTRUM_STROBE, HIGH);
+  delay(1);
+  digitalWrite(PIN_SPECTRUM_STROBE, HIGH);
+  delay(1);
+  digitalWrite(PIN_SPECTRUM_STROBE, LOW);
+  delay(1);
+  digitalWrite(PIN_SPECTRUM_STROBE, LOW);
+  delay(5);
+  // Reading the analyzer now will read the lowest frequency.
 }
 
 /* *************** COLUMN CALCULATIONS ************************************ */
@@ -232,7 +254,7 @@ float calculateColumnRatio(int column, int level) {
   // Calculate the ratio of LEDs to draw!
   float ratio = ((float) adjusted_level) / factor;
 
-  if (LOGGING_ENABLED && logCounter == TICKS_BETWEEN_LOGS) {
+  if (false && LOGGING_ENABLED && logCounter == TICKS_BETWEEN_LOGS) {
     Serial.print("c: ");
     Serial.print(column);
     Serial.print(", l: ");
@@ -350,8 +372,32 @@ uint8_t Blue(uint16_t color) {
 }
 
 // Return color (dimmed by 75% ???)
-uint16_t DimColor(uint16_t color, int degree=1) {
-  return matrix.Color(Red(color) >> degree, Green(color) >> degree, Blue(color) >> degree);
+uint16_t DimColor(uint16_t colour, int degree=1) {
+  // Get the components
+  uint8_t red = Red(colour);
+  uint8_t green = Green(colour);
+  uint8_t blue = Blue(colour);
+
+  int dimmedColour = matrix.Color(Red(colour) >> degree, Green(colour) >> degree, Blue(colour) >> degree);
+  //return dimmedColour;
+  
+  // Only dim if there's room to
+  if (Red(dimmedColour) < 0x10 || Green(dimmedColour) < 0x10 || Blue(dimmedColour) < 0x10) {
+    return colour;
+  } else {
+    return dimmedColour;
+  }
+
+  /*
+  if (red > 0x10) red = red >> degree;
+  if (green > 0x10) green = green >> degree;
+  if (blue > 0x10) blue = blue >> degree;
+  return matrix.Color(red, green, blue);
+   */
+  
+  // Otherwise return the original colour
+  //return matrix.Color(Red(colour) >> degree, Green(colour) >> degree, Blue(colour) >> degree);
+  //return colour;
 }
 
 /* *************** DRAWING ************************************ */
@@ -360,11 +406,11 @@ int getColour(float ratio, int num_lights, int column, int y, int dim=0) {
   int colour;
   // Set desired colourscheme to true/1
 
-  if (1) // Solid colur
+  if (0) // Solid colur
     colour = column_colours[4];
   if (0) // Color wheel
     colour = column_colours[(int)(7*ratio)];
-  if (0) // Unique colours to each column
+  if (1) // Unique colours to each column
     colour = column_colours[column];
   if (0) // Classic
     colour = classic_row_colours[ROWS-1-y];
@@ -398,6 +444,22 @@ void drawColumn(int column, float ratio, int dim=0, bool onlyPeaks=false, bool a
     num_lights = (rows * ratio) + 0.5;
     for (int y = (rows - num_lights); y < rows; y++) {
       colour = getColour(ratio, num_lights, column, ((y+0.5)/(float)rows)*ROWS, dim);
+
+      // Apply gradient dim
+      int dimLevels = 4;
+      int steps = rows * ratio * dimLevels;
+      if (y == 0) {
+        colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == 1) {
+        if (steps < 8) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      } else if (y == 2) {
+        if (steps < 4) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      }
+      
       matrix.drawPixel(column, y, colour);
       if (y != center) { // Draw mirrored LED if off-center
         int mirror_y = ROWS - 1 - y;
@@ -454,7 +516,8 @@ void drawSpectrum() {
     // Select the appropriate level for this column
     int level = getColumnLevel(column);
     float ratio = calculateColumnRatio(column, level);
-    drawColumn(column, ratio, dimMod, true, true);
+    //drawColumn(column, ratio, dimMod, true, true);
+    drawColumn(column, ratio, dimMod, false, false);
   }
 
   matrix.show();
@@ -483,22 +546,6 @@ void loop() {
   }
 }
 
-void resetAnalyzer() {
-  pinMode(PIN_SPECTRUM_RESET, OUTPUT);
-  pinMode(PIN_SPECTRUM_STROBE, OUTPUT);
-  digitalWrite(PIN_SPECTRUM_STROBE, LOW);
-  delay(1);
-  digitalWrite(PIN_SPECTRUM_STROBE, HIGH);
-  delay(1);
-  digitalWrite(PIN_SPECTRUM_STROBE, HIGH);
-  delay(1);
-  digitalWrite(PIN_SPECTRUM_STROBE, LOW);
-  delay(1);
-  digitalWrite(PIN_SPECTRUM_STROBE, LOW);
-  delay(5);
-  // Reading the analyzer now will read the lowest frequency.
-}
-
 // The setup function runs once when you press reset or power the board
 void setup() {
   // Init serial logging
@@ -515,7 +562,7 @@ void setup() {
   for (int c = 0; c < sizeof(column_colours); c++) {
     matrix.fillScreen(c);
     matrix.show();
-    delay(10);
+    delay(100);
   }
   matrix.fillScreen(0xffff); // White
   matrix.show();
