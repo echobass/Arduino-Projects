@@ -29,6 +29,12 @@
  *    Always draw center = false
  */
 
+/*
+ * MIC ONLY!
+ * - Currently using a shield that is mic only
+ * - Mic feeds to LEFT
+ */
+
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
 
@@ -37,14 +43,14 @@
 // Behaviour configuration
 #define DELAY_MS 25 // Set above 0 to delay some milliseconds, messes with spectrum measurements for some reason?
 #define LEVEL_REDUCTION 120 // Flat reduction for all audio band levels, accounts for background and internal noise
-#define SENSITIVITY 100 // 0 No Sensitivity (Off) -> 50 Ideal/Center - 100 High
+#define SENSITIVITY 50 // 0 No Sensitivity (Off) -> 50 Ideal/Center - 100 High
 
 // Logging configuration
 #define LOGGING_ENABLED false // Logs to Serial 9600, slows things down though
 #define TICKS_BETWEEN_LOGS 200 // Set above 0 to only log every so ticks
 
 // Display configuration
-#define MIC_OVERRIDE true // Set to true to use mic instead of audio in
+#define MIC_OVERRIDE false // Set to true to use mic instead of audio in
 #define BRIGHTNESS 30 // Set the overall brightness; Low values will affect colours
 
 // Matrix specs
