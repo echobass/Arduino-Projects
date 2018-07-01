@@ -37,16 +37,15 @@
 
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
+#include <MD_REncoder.h>
 
 /* *************** CONFIGURATION ************************************ */
 
 // Behaviour configuration
-#define DELAY_MS 25 // Set above 0 to delay some milliseconds, messes with spectrum measurements for some reason?
-#define LEVEL_REDUCTION 120 // Flat reduction for all audio band levels, accounts for background and internal noise
-#define SENSITIVITY 50 // 0 No Sensitivity (Off) -> 50 Ideal/Center - 100 High
+#define DRAW_DELAY_MS 25 // Set above 0 to delay some milliseconds, messes with spectrum measurements for some reason?
 
 // Logging configuration
-#define LOGGING_ENABLED false // Logs to Serial 9600, slows things down though
+#define LOGGING_ENABLED true // Logs to Serial 9600, slows things down though
 #define TICKS_BETWEEN_LOGS 200 // Set above 0 to only log every so ticks
 
 // Display configuration
@@ -63,7 +62,6 @@
 // Spectrum specs
 #define BANDS 7 // Audio spectrum bands
 #define MAX_LEVEL 1023.0 // Max readable value for audio (analog) levels
-#define IDEAL_SENSITIVITY 50 // A centerpoint for calculating sensitivity
 
 // Spectrum pins
 // For spectrum analyzer shield, these three pins are used.
@@ -80,6 +78,17 @@ int PIN_SPECTRUM_SOURCE = MIC_OVERRIDE ? PIN_SPECTRUM_RIGHT : PIN_SPECTRUM_LEFT;
 #define MED_AVERAGE 1
 #define LONG_AVERAGE 2
 int trailingAverageCounts[TRAILING_BUCKETS] = {10, 100, 10000}; // # of ticks used to calculate averages
+
+// Sensitivity Adjustment
+#define PIN_SENSITIVITY 2
+
+// Rotary Encoder
+#define PIN_ENCODER_A 8
+#define PIN_ENCODER_B 9
+#define PIN_ENCODER_SWITCH 10 // Unused
+
+MD_REncoder rotaryEncoder = MD_REncoder(PIN_ENCODER_A, PIN_ENCODER_B);
+
 
 /* *************** GLOBAL VARS ************************************ */
 
@@ -106,10 +115,6 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(COLUMNS, ROWS, PIN_NEOMATRIX,
                                       NEO_MATRIX_TOP        + NEO_MATRIX_LEFT +
                                       NEO_MATRIX_ROWS       + NEO_MATRIX_PROGRESSIVE,
                                       NEO_GRBW              + NEO_KHZ800);
-
-// Init calculated constants
-int LEVEL_COEFFICIENT = (float)IDEAL_SENSITIVITY / (float)SENSITIVITY;
-int LEVEL_ADJUST = ((float)LEVEL_REDUCTION) * LEVEL_COEFFICIENT;
 
 // Init runtime vars
 int logCounter = 0;
@@ -213,7 +218,8 @@ int getColumnLevel(int column) {
   
   if (column == 0) {
     level = spectrumAverage;
-    level = max(level, trailingAverages[SHORT_AVERAGE]); // Smooth against trailing average
+    //level = max(level, trailingAverages[SHORT_AVERAGE]); // Smooth against trailing average
+    level = max(spectrumMax, trailingMaximums[SHORT_AVERAGE]);
   } else {
     int band = column-1;
     level = spectrum[band];
@@ -225,16 +231,15 @@ int getColumnLevel(int column) {
 }
 
 float calculateColumnRatio(int column, int level) {
-  if (SENSITIVITY == 0) {
-    return 0.0;
-  }
+  // Read the sensitvity and calculate an adjustment
+  // Flat reduction for all audio band levels, accounts for background and internal noise
+  int sensitivityAdjustment = analogRead(PIN_SENSITIVITY);
 
   // Adjust for baseline noise etc
   //  Keeps the board dark when silent
   //  Unfortunately, forces music to be loud
   //  Need a way to scale so that lower volumes still work...
-  
-  int adjusted_level = level - LEVEL_ADJUST;
+  int adjustedLevel = level - sensitivityAdjustment;
 
   // Reality is... Baseline and internal noise is indistinguishable from low volume signals
   //  Can't automagically account for one without ruining the other
@@ -247,7 +252,7 @@ float calculateColumnRatio(int column, int level) {
   //  Where to do this??  Shouldn't trailingMaximums...
   //   Apply to maximums?
   //   Apply to raw readings?
-  factor = factor - LEVEL_ADJUST;
+  factor = factor - sensitivityAdjustment; // Don't curr
 
   // Smooth against trailing averages
   factor = max(factor, min(trailingMaximums[SHORT_AVERAGE], trailingMaximums[MED_AVERAGE]));
@@ -258,7 +263,7 @@ float calculateColumnRatio(int column, int level) {
   }
 
   // Calculate the ratio of LEDs to draw!
-  float ratio = ((float) adjusted_level) / factor;
+  float ratio = ((float) adjustedLevel) / factor;
 
   if (false && LOGGING_ENABLED && logCounter == TICKS_BETWEEN_LOGS) {
     Serial.print("c: ");
@@ -266,7 +271,7 @@ float calculateColumnRatio(int column, int level) {
     Serial.print(", l: ");
     Serial.print(level);
     Serial.print(", al: ");
-    Serial.print(adjusted_level);
+    Serial.print(adjustedLevel);
     Serial.print(", r: ");
     Serial.print(ratio);
     Serial.print("\n");
@@ -408,6 +413,7 @@ uint16_t DimColor(uint16_t colour, int degree=1) {
 
 /* *************** DRAWING ************************************ */
 
+/*
 int getColour(float ratio, int num_lights, int column, int y, int dim=0) {
   int colour;
   // Set desired colourscheme to true/1
@@ -495,41 +501,570 @@ void drawColumn(int column, float ratio, int dim=0, bool onlyPeaks=false, bool a
 }
 
 void drawSpectrum() {
-  matrix.fillScreen(0); // Blank screen
-
-  // Detect beat?
-  int dimMod = 0;
-  if (0) {
-    bool beat = false;
-    if (trailingSpectrumLevels[0][0] > trailingSpectrumLevels[0][1]) {
-      beat = true;
-      dimMod = 0;
-    }
-  }
+  matrix.fillScreen(0); // Blank the screen
 
   for (int column = 0; column < COLUMNS; column++) {
-
-    // Draw a trail?
-    /*
-    if (column > 0) {
-      int tailLevel = getColumnLevel(column);
-      tailLevel = max(tailLevel, trailingSpectrumLevels[column-1][1]);
-      float tailRatio = calculateColumnRatio(column, tailLevel);
-      drawColumn(column, tailRatio, 1+dimMod);
-    }
-     */
-  
     // Select the appropriate level for this column
     int level = getColumnLevel(column);
     float ratio = calculateColumnRatio(column, level);
-    //drawColumn(column, ratio, dimMod, true, true);
-    drawColumn(column, ratio, dimMod, false, false);
+    
+    //drawColumn(column, ratio, 0, true, true);
+    drawColumn(column, ratio, 0, false, false);
   }
 
   matrix.show();
 }
+ */
+
+/* *************** VU ************************************ */
+
+void drawRainbowVu() {
+  matrix.fillScreen(0);
+  for (int column = 0; column < COLUMNS; column++) {
+    int level = getColumnLevel(column);
+    float ratio = calculateColumnRatio(column, level);
+    int num_lights = (ROWS * ratio) + 0.5; // Add 0.5 for lazy integer rounding-up
+    for (int y = (ROWS - num_lights); y < ROWS; y++) {
+      int colour = column_colours[column];
+      matrix.drawPixel(column, y, colour);
+    }
+  }
+  matrix.show();
+}
+
+void drawClassicVu() {
+  matrix.fillScreen(0);
+  for (int column = 0; column < COLUMNS; column++) {
+    int level = getColumnLevel(column);
+    float ratio = calculateColumnRatio(column, level);
+    int num_lights = (ROWS * ratio) + 0.5; // Add 0.5 for lazy integer rounding-up
+    for (int y = (ROWS - num_lights); y < ROWS; y++) {
+      int colour = classic_row_colours[ROWS-1-y];
+      matrix.drawPixel(column, y, colour);
+    }
+  }
+  matrix.show();
+}
+
+void drawCoolVu() {
+  matrix.fillScreen(0);
+  for (int column = 0; column < COLUMNS; column++) {
+    int level = getColumnLevel(column);
+    float ratio = calculateColumnRatio(column, level);
+    int num_lights = (ROWS * ratio) + 0.5; // Add 0.5 for lazy integer rounding-up
+    for (int y = (ROWS - num_lights); y < ROWS; y++) {
+      int colour = cool_row_colours[ROWS-1-y];
+      matrix.drawPixel(column, y, colour);
+    }
+  }
+  matrix.show();
+}
+
+void drawPowerWheelVu() {
+  matrix.fillScreen(0);
+  for (int column = 0; column < COLUMNS; column++) {
+    int level = getColumnLevel(column);
+    float ratio = calculateColumnRatio(column, level);
+    int num_lights = (ROWS * ratio) + 0.5; // Add 0.5 for lazy integer rounding-up
+    for (int y = (ROWS - num_lights); y < ROWS; y++) {
+      int colour = column_colours[(int)(7*ratio)];
+      matrix.drawPixel(column, y, colour);
+    }
+  }
+  matrix.show();
+}
+
+/* *************** OSC ************************************ */
+
+void drawRainbowOsc() {
+  matrix.fillScreen(0);
+  for (int column = 0; column < COLUMNS; column++) {
+    int level = getColumnLevel(column);
+    float ratio = calculateColumnRatio(column, level);
+    int num_lights = (ROWS * ratio) + 0.5; // Add 0.5 for lazy integer rounding-up
+    int center = ROWS / 2;
+    int rows = center + 1;
+    num_lights = (rows * ratio) + 0.5;
+    for (int y = (rows - num_lights); y < rows; y++) {
+      int colour = column_colours[column];
+      
+      // Apply gradient dim
+      int dimLevels = 4;
+      int steps = rows * ratio * dimLevels;
+      if (y == 0) {
+        colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == 1) {
+        if (steps < 8) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      } else if (y == 2) {
+        if (steps < 4) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      }
+      
+      matrix.drawPixel(column, y, colour);
+      if (y != center) { // Draw mirrored LED if off-center
+        int mirror_y = ROWS - 1 - y;
+        matrix.drawPixel(column, mirror_y, colour);
+      }
+    }
+  }
+  matrix.show();
+}
+
+void drawClassicOsc() {
+  matrix.fillScreen(0);
+  for (int column = 0; column < COLUMNS; column++) {
+    int level = getColumnLevel(column);
+    float ratio = calculateColumnRatio(column, level);
+    int num_lights = (ROWS * ratio) + 0.5; // Add 0.5 for lazy integer rounding-up
+    int center = ROWS / 2;
+    int rows = center + 1;
+    num_lights = (rows * ratio) + 0.5;
+    for (int y = (rows - num_lights); y < rows; y++) {
+      int colour = classic_row_colours[ROWS-1-(int)(((y+0.5)/(float)rows)*ROWS)]; // Don't curr
+      
+      // Apply gradient dim
+      int dimLevels = 4;
+      int steps = rows * ratio * dimLevels;
+      if (y == 0) {
+        colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == 1) {
+        if (steps < 8) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      } else if (y == 2) {
+        if (steps < 4) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      }
+      
+      matrix.drawPixel(column, y, colour);
+      if (y != center) { // Draw mirrored LED if off-center
+        int mirror_y = ROWS - 1 - y;
+        matrix.drawPixel(column, mirror_y, colour);
+      }
+    }
+  }
+  matrix.show();
+}
+
+void drawCoolOsc() {
+  matrix.fillScreen(0);
+  for (int column = 0; column < COLUMNS; column++) {
+    int level = getColumnLevel(column);
+    float ratio = calculateColumnRatio(column, level);
+    int num_lights = (ROWS * ratio) + 0.5; // Add 0.5 for lazy integer rounding-up
+    int center = ROWS / 2;
+    int rows = center + 1;
+    num_lights = (rows * ratio) + 0.5;
+    for (int y = (rows - num_lights); y < rows; y++) {
+      int colour = cool_row_colours[ROWS-1-(int)(((y+0.5)/(float)rows)*ROWS)]; // Don't curr
+      
+      // Apply gradient dim
+      int dimLevels = 4;
+      int steps = rows * ratio * dimLevels;
+      if (y == 0) {
+        colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == 1) {
+        if (steps < 8) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      } else if (y == 2) {
+        if (steps < 4) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      }
+      
+      matrix.drawPixel(column, y, colour);
+      if (y != center) { // Draw mirrored LED if off-center
+        int mirror_y = ROWS - 1 - y;
+        matrix.drawPixel(column, mirror_y, colour);
+      }
+    }
+  }
+  matrix.show();
+}
+
+void drawPowerWheelOsc() {
+  matrix.fillScreen(0);
+  for (int column = 0; column < COLUMNS; column++) {
+    int level = getColumnLevel(column);
+    float ratio = calculateColumnRatio(column, level);
+    int num_lights = (ROWS * ratio) + 0.5; // Add 0.5 for lazy integer rounding-up
+    int center = ROWS / 2;
+    int rows = center + 1;
+    num_lights = (rows * ratio) + 0.5;
+    for (int y = (rows - num_lights); y < rows; y++) {
+      int colour = column_colours[(int)(7*ratio)];
+      
+      // Apply gradient dim
+      int dimLevels = 4;
+      int steps = rows * ratio * dimLevels;
+      if (y == 0) {
+        colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == 1) {
+        if (steps < 8) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      } else if (y == 2) {
+        if (steps < 4) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      }
+      
+      matrix.drawPixel(column, y, colour);
+      if (y != center) { // Draw mirrored LED if off-center
+        int mirror_y = ROWS - 1 - y;
+        matrix.drawPixel(column, mirror_y, colour);
+      }
+    }
+  }
+  matrix.show();
+}
+
+/* *************** OSC TIPS ************************************ */
+
+void drawRainbowOscTips() {
+  matrix.fillScreen(0);
+  for (int column = 0; column < COLUMNS; column++) {
+    int level = getColumnLevel(column);
+    float ratio = calculateColumnRatio(column, level);
+    int num_lights = (ROWS * ratio) + 0.5; // Add 0.5 for lazy integer rounding-up
+    int center = ROWS / 2;
+    int rows = center + 1;
+    num_lights = (rows * ratio) + 0.5;
+    for (int y = (rows - num_lights); y < rows; y++) {
+      int colour = column_colours[column];
+      
+      // Apply gradient dim
+      int dimLevels = 4;
+      int steps = rows * ratio * dimLevels;
+      if (y == 0) {
+        colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == 1) {
+        if (steps < 8) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      } else if (y == 2) {
+        if (steps < 4) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      }
+      
+      matrix.drawPixel(column, y, colour);
+      if (y != center) { // Draw mirrored LED if off-center
+        int mirror_y = ROWS - 1 - y;
+        matrix.drawPixel(column, mirror_y, colour);
+      }
+      
+      break; // Only draw peaks
+    }
+    
+    if (num_lights < 1) { // Always draw center row
+      int colour = column_colours[column];
+      matrix.drawPixel(column, center, colour);
+    }
+  }
+  matrix.show();
+}
+
+void drawClassicOscTips() {
+  matrix.fillScreen(0);
+  for (int column = 0; column < COLUMNS; column++) {
+    int level = getColumnLevel(column);
+    float ratio = calculateColumnRatio(column, level);
+    int num_lights = (ROWS * ratio) + 0.5; // Add 0.5 for lazy integer rounding-up
+    int center = ROWS / 2;
+    int rows = center + 1;
+    num_lights = (rows * ratio) + 0.5;
+    for (int y = (rows - num_lights); y < rows; y++) {
+      int colour = classic_row_colours[ROWS-1-(int)(((y+0.5)/(float)rows)*ROWS)]; // Don't curr
+      
+      // Apply gradient dim
+      int dimLevels = 4;
+      int steps = rows * ratio * dimLevels;
+      if (y == 0) {
+        colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == 1) {
+        if (steps < 8) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      } else if (y == 2) {
+        if (steps < 4) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      }
+      
+      matrix.drawPixel(column, y, colour);
+      if (y != center) { // Draw mirrored LED if off-center
+        int mirror_y = ROWS - 1 - y;
+        matrix.drawPixel(column, mirror_y, colour);
+      }
+      
+      break; // Only draw peaks
+    }
+    
+    if (num_lights < 1) { // Always draw center row
+      int colour = classic_row_colours[ROWS-1-(int)((center/(float)rows)*ROWS)]; // Don't curr
+      matrix.drawPixel(column, center, colour);
+    }
+  }
+  matrix.show();
+}
+
+void drawCoolOscTips() {
+  matrix.fillScreen(0);
+  for (int column = 0; column < COLUMNS; column++) {
+    int level = getColumnLevel(column);
+    float ratio = calculateColumnRatio(column, level);
+    int num_lights = (ROWS * ratio) + 0.5; // Add 0.5 for lazy integer rounding-up
+    int center = ROWS / 2;
+    int rows = center + 1;
+    num_lights = (rows * ratio) + 0.5;
+    for (int y = (rows - num_lights); y < rows; y++) {
+      int colour = cool_row_colours[ROWS-1-(int)(((y+0.5)/(float)rows)*ROWS)]; // Don't curr
+      
+      // Apply gradient dim
+      int dimLevels = 4;
+      int steps = rows * ratio * dimLevels;
+      if (y == 0) {
+        colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == 1) {
+        if (steps < 8) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      } else if (y == 2) {
+        if (steps < 4) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      }
+      
+      matrix.drawPixel(column, y, colour);
+      if (y != center) { // Draw mirrored LED if off-center
+        int mirror_y = ROWS - 1 - y;
+        matrix.drawPixel(column, mirror_y, colour);
+      }
+      
+      break; // Only draw peaks
+    }
+    
+    if (num_lights < 1) { // Always draw center row
+      int colour = cool_row_colours[ROWS-1-(int)((center/(float)rows)*ROWS)]; // Don't curr
+      matrix.drawPixel(column, center, colour);
+    }
+  }
+  matrix.show();
+}
+
+void drawPowerWheelOscTips() {
+  matrix.fillScreen(0);
+  for (int column = 0; column < COLUMNS; column++) {
+    int level = getColumnLevel(column);
+    float ratio = calculateColumnRatio(column, level);
+    int num_lights = (ROWS * ratio) + 0.5; // Add 0.5 for lazy integer rounding-up
+    int center = ROWS / 2;
+    int rows = center + 1;
+    num_lights = (rows * ratio) + 0.5;
+    for (int y = (rows - num_lights); y < rows; y++) {
+      int colour = column_colours[(int)(7*ratio)];
+      
+      // Apply gradient dim
+      int dimLevels = 4;
+      int steps = rows * ratio * dimLevels;
+      if (y == 0) {
+        colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == 1) {
+        if (steps < 8) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      } else if (y == 2) {
+        if (steps < 4) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      }
+      
+      matrix.drawPixel(column, y, colour);
+      if (y != center) { // Draw mirrored LED if off-center
+        int mirror_y = ROWS - 1 - y;
+        matrix.drawPixel(column, mirror_y, colour);
+      }
+      
+      break; // Only draw peaks
+    }
+    
+    if (num_lights < 1) { // Always draw center row
+      int colour = column_colours[(int)(7*ratio)];
+      matrix.drawPixel(column, center, colour);
+    }
+  }
+  matrix.show();
+}
+
+/* *************** MODES ************************************ */
+
+// VU Meter
+// Oscilloscope
+
+// Colour mode (column, row, power)
+
+// Classic
+// Rainbow
+// Cool
+
+// Single Colour
+// Axis
+
+#define RAINBOW_VU            11
+#define CLASSIC_VU            12
+#define COOL_VU               13
+#define POWER_WHEEL_VU        14
+
+#define RAINBOW_OSC           21
+#define CLASSIC_OSC           22
+#define COOL_OSC              23
+#define POWER_WHEEL_OSC       24
+
+#define RAINBOW_OSC_TIPS      31
+#define CLASSIC_OSC_TIPS      32
+#define COOL_OSC_TIPS         33
+#define POWER_WHEEL_OSC_TIPS  34
+
+int orderedPresets[] = {
+  /*
+  RAINBOW_VU,
+  CLASSIC_VU,
+  COOL_VU,
+  //POWER_WHEEL_VU,
+  
+  RAINBOW_OSC,
+  CLASSIC_OSC,
+  COOL_OSC,
+  //POWER_WHEEL_OSC,
+  
+  RAINBOW_OSC_TIPS,
+  CLASSIC_OSC_TIPS,
+  COOL_OSC_TIPS,
+  //POWER_WHEEL_OSC_TIPS
+   */
+  /*
+  RAINBOW_VU,
+  RAINBOW_OSC,
+  RAINBOW_OSC_TIPS,
+  
+  CLASSIC_VU,
+  CLASSIC_OSC,
+  CLASSIC_OSC_TIPS,
+  
+  COOL_VU,
+  COOL_OSC,
+  COOL_OSC_TIPS,
+  
+  //POWER_WHEEL_VU,
+  //POWER_WHEEL_OSC,
+  //POWER_WHEEL_OSC_TIPS
+  */
+  RAINBOW_OSC_TIPS,
+  RAINBOW_OSC,
+  RAINBOW_VU,
+  
+  CLASSIC_OSC_TIPS,
+  CLASSIC_OSC,
+  CLASSIC_VU,
+  
+  COOL_OSC_TIPS,
+  COOL_OSC,
+  COOL_VU,
+  
+  //POWER_WHEEL_OSC_TIPS,
+  //POWER_WHEEL_OSC,
+  //POWER_WHEEL_VU,
+};
+int numPresets = sizeof(orderedPresets) / sizeof(int);
+
+int defaultPresetIndex = 0;
+int startingPresetIndex = defaultPresetIndex;
+
+int currentPresetIndex = startingPresetIndex;
+int currentPreset = orderedPresets[startingPresetIndex];
+
+void startPresetByIndex(int index) {
+  currentPresetIndex = index;
+  currentPreset = orderedPresets[index];
+}
+
+void cyclePreset(boolean forward = true) {
+  int newPresetIndex;
+  if (forward) {
+    newPresetIndex = (numPresets + currentPresetIndex + 1) % numPresets;
+    Serial.println(newPresetIndex);
+    Serial.println("Forward");
+  } else {
+    newPresetIndex = (numPresets + currentPresetIndex - 1) % numPresets;
+    Serial.println(newPresetIndex);
+    Serial.println("Backwards");
+  }
+  startPresetByIndex(newPresetIndex);
+}
+
+void drawByPreset(int preset) {
+  switch (preset) {
+    case RAINBOW_VU:
+      drawRainbowVu();
+      break;
+    case CLASSIC_VU:
+      drawClassicVu();
+      break;
+    case COOL_VU:
+      drawCoolVu();
+      break;
+    case POWER_WHEEL_VU:
+      drawPowerWheelVu();
+      break;
+      
+    case RAINBOW_OSC:
+      drawRainbowOsc();
+      break;
+    case CLASSIC_OSC:
+      drawClassicOsc();
+      break;
+    case COOL_OSC:
+      drawCoolOsc();
+      break;
+    case POWER_WHEEL_OSC:
+      drawPowerWheelOsc();
+      break;
+      
+    case RAINBOW_OSC_TIPS:
+      drawRainbowOscTips();
+      break;
+    case CLASSIC_OSC_TIPS:
+      drawClassicOscTips();
+      break;
+    case COOL_OSC_TIPS:
+      drawCoolOscTips();
+      break;
+    case POWER_WHEEL_OSC_TIPS:
+      drawPowerWheelOscTips();
+      break;
+      
+    default:
+      //drawByPreset(orderedPresets[defaultPresetIndex]); // don't curr
+      break;
+  }
+}
 
 /* *************** RUNTIME ************************************ */
+
+unsigned long lastDraw = millis();
+
+void handleEncoder() {
+  uint8_t encoderTurn = rotaryEncoder.read();
+  if (encoderTurn) {
+    cyclePreset(encoderTurn == DIR_CCW);
+  }
+}
 
 void loop() {
   readSpectrum();
@@ -537,19 +1072,18 @@ void loop() {
   if (LOGGING_ENABLED && logCounter == TICKS_BETWEEN_LOGS) {
     logSpectrum();
   }
-  
-  drawSpectrum();
+    
+  unsigned long now = millis();
+  if (now > (DRAW_DELAY_MS + lastDraw)) {
+    drawByPreset(currentPreset);
+    lastDraw = now;
+  }
 
   if (LOGGING_ENABLED && logCounter == TICKS_BETWEEN_LOGS) {
     Serial.println("----");
     logCounter = 0;
-  } else {
-    logCounter++;
   }
-  
-  if (DELAY_MS > 0) {
-    delay(DELAY_MS);
-  }
+  logCounter++; // Don't curr
 }
 
 // The setup function runs once when you press reset or power the board
@@ -559,18 +1093,30 @@ void setup() {
     Serial.begin(9600);
   }
 
+  // Rotary Encoder
+  rotaryEncoder.begin();
+  attachInterrupt(PIN_ENCODER_A, handleEncoder, CHANGE); 
+  attachInterrupt(PIN_ENCODER_B, handleEncoder, CHANGE);
+
+  // Sensitivity Pot
+  pinMode(PIN_SENSITIVITY, INPUT);
+  
   // Init the spectrum analyzer
   resetAnalyzer();
 
-  // Init the screen
+  // Init the matrix
   matrix.begin();
   matrix.setBrightness(BRIGHTNESS);
-  for (int c = 0; c < sizeof(column_colours); c++) {
-    matrix.fillScreen(c);
+  for (int c = COLUMNS-1; c >= 0; c--) {
+    for (int r = 0; r < ROWS; r++) {
+      matrix.drawPixel(c, r, column_colours[c]);
+    }
     matrix.show();
-    delay(100);
+    delay(150);
   }
-  matrix.fillScreen(0xffff); // White
+  delay(250);
+  matrix.fillScreen(0);
   matrix.show();
+  delay(50);
 }
 
