@@ -201,7 +201,6 @@ void initAnalyzer() {
   pinMode(PIN_SPECTRUM_SOURCE, INPUT);
  
   // Create an initial state for our pins
-  /*
   digitalWrite (PIN_SPECTRUM_RESET,  LOW);
   digitalWrite (PIN_SPECTRUM_STROBE, LOW);
   delay        (1);
@@ -212,8 +211,8 @@ void initAnalyzer() {
   digitalWrite (PIN_SPECTRUM_RESET,  LOW);
   digitalWrite (PIN_SPECTRUM_STROBE, HIGH);
   delay        (1);
-  */
 
+  /*
   digitalWrite(PIN_SPECTRUM_STROBE, LOW);
   delay(1);
   digitalWrite(PIN_SPECTRUM_STROBE, HIGH);
@@ -224,6 +223,7 @@ void initAnalyzer() {
   delay(1);
   digitalWrite(PIN_SPECTRUM_STROBE, LOW);
   delay(5);
+  */
   // Reading the analyzer now will read the lowest frequency.
 }
 
@@ -253,7 +253,7 @@ float calculateColumnRatio(int column, int level) {
   // Read the sensitvity and calculate an adjustment
   // Flat reduction for all audio band levels, accounts for background and internal noise
   int sensitivityAdjustment = analogRead(PIN_SENSITIVITY);
-  sensitivityAdjustment = (sensitivityAdjustment / MAX_LEVEL) * 256; // Normalize to 0-256 (128?)
+  sensitivityAdjustment = 64 + ((sensitivityAdjustment / MAX_LEVEL) * 256); // Baseline 64, Normalize to roughly 0-256
 
   // Adjust for baseline noise etc
   //  Keeps the board dark when silent
