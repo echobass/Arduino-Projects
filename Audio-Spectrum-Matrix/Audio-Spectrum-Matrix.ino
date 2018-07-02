@@ -39,6 +39,7 @@
 #include <Adafruit_NeoPixel.h>
 #include <MD_REncoder.h>
 #include <FlashStorage.h>
+#include <Button.h>
 
 /* *************** CONFIGURATION ************************************ */
 
@@ -89,6 +90,7 @@ int trailingAverageCounts[TRAILING_BUCKETS] = {10, 100, 10000}; // # of ticks us
 #define PIN_ENCODER_SWITCH 10 // Unused
 
 MD_REncoder rotaryEncoder = MD_REncoder(PIN_ENCODER_A, PIN_ENCODER_B);
+Button rotaryClick(PIN_ENCODER_SWITCH); // Connect your button between pin 2 and GND
 
 
 /* *************** GLOBAL VARS ************************************ */
@@ -1168,6 +1170,10 @@ void loop() {
   if (LOGGING_ENABLED && logCounter == TICKS_BETWEEN_LOGS) {
     logSpectrum();
   }
+
+  if (rotaryClick.pressed()) {
+    startPresetByIndex(defaultPresetIndex);
+  }
   
   if (!modeSaved && (now > (millisBeforeSave + lastChangeTime))) {
     lastModeFlash.write(currentPresetIndex);
@@ -1201,6 +1207,8 @@ void setup() {
   // Sensitivity Pot
   pinMode(PIN_SENSITIVITY, INPUT);
   
+  rotaryClick.begin();
+  
   // Init the spectrum analyzer
   initAnalyzer();
 
@@ -1231,16 +1239,5 @@ void setup() {
     }
   }
   matrix.drawPixel(0, 2, DimColor(column_colours[0]));
-  //delay(240);
-
-  /*
-  for (int c = 0; c < COLUMNS; c++) {
-    delay(20);
-    for (int r = 0; r < ROWS; r++) {
-      matrix.drawPixel(c, r, 0);
-    }
-    matrix.show();
-  }
-  */
 }
 
