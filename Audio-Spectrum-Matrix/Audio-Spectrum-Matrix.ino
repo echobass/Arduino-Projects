@@ -50,7 +50,7 @@
 
 // Display configuration
 #define MIC_OVERRIDE false // Set to true to use mic instead of audio in
-#define BRIGHTNESS 30 // Set the overall brightness; Low values will affect colours
+#define BRIGHTNESS 25 // Set the overall brightness; Low values will affect colours
 
 // Matrix specs
 #define COLUMNS 8 // Width
@@ -192,9 +192,25 @@ void logSpectrum() {
   Serial.print("\n");
 }
 
-void resetAnalyzer() {
+void initAnalyzer() {
   pinMode(PIN_SPECTRUM_RESET, OUTPUT);
   pinMode(PIN_SPECTRUM_STROBE, OUTPUT);
+  pinMode(PIN_SPECTRUM_SOURCE, INPUT);
+ 
+  // Create an initial state for our pins
+  /*
+  digitalWrite (PIN_SPECTRUM_RESET,  LOW);
+  digitalWrite (PIN_SPECTRUM_STROBE, LOW);
+  delay        (1);
+ 
+  // Reset the MSGEQ7 as per the datasheet timing diagram
+  digitalWrite (PIN_SPECTRUM_RESET,  HIGH);
+  delay        (1);
+  digitalWrite (PIN_SPECTRUM_RESET,  LOW);
+  digitalWrite (PIN_SPECTRUM_STROBE, HIGH);
+  delay        (1);
+  */
+
   digitalWrite(PIN_SPECTRUM_STROBE, LOW);
   delay(1);
   digitalWrite(PIN_SPECTRUM_STROBE, HIGH);
@@ -219,7 +235,7 @@ int getColumnLevel(int column) {
   if (column == 0) {
     level = spectrumAverage;
     //level = max(level, trailingAverages[SHORT_AVERAGE]); // Smooth against trailing average
-    level = max(spectrumMax, trailingMaximums[SHORT_AVERAGE]);
+    level = max(spectrumMax, trailingMaximums[SHORT_AVERAGE]); // Smooth against trailing average
   } else {
     int band = column-1;
     level = spectrum[band];
@@ -234,6 +250,7 @@ float calculateColumnRatio(int column, int level) {
   // Read the sensitvity and calculate an adjustment
   // Flat reduction for all audio band levels, accounts for background and internal noise
   int sensitivityAdjustment = analogRead(PIN_SENSITIVITY);
+  sensitivityAdjustment = (sensitivityAdjustment / MAX_LEVEL) * 256; // Normalize to 0-256 (128?)
 
   // Adjust for baseline noise etc
   //  Keeps the board dark when silent
@@ -560,21 +577,42 @@ void drawCoolVu() {
   matrix.show();
 }
 
-void drawPowerWheelVu() {
+/* *************** OSC ************************************ */
+
+void drawColorOsc(int colour) {
   matrix.fillScreen(0);
   for (int column = 0; column < COLUMNS; column++) {
     int level = getColumnLevel(column);
     float ratio = calculateColumnRatio(column, level);
     int num_lights = (ROWS * ratio) + 0.5; // Add 0.5 for lazy integer rounding-up
-    for (int y = (ROWS - num_lights); y < ROWS; y++) {
-      int colour = column_colours[(int)(7*ratio)];
+    int center = ROWS / 2;
+    int rows = center + 1;
+    num_lights = (rows * ratio) + 0.5;
+    for (int y = (rows - num_lights); y < rows; y++) {
+      // Apply gradient dim
+      int dimLevels = 4;
+      int steps = rows * ratio * dimLevels;
+      if (num_lights == 1) {
+        colour = DimColor(colour, (steps % dimLevels));
+      } else if (num_lights == 2) {
+        if (steps < 8) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      } else if (num_lights == 3) {
+        if (steps < 4) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      }
+      
       matrix.drawPixel(column, y, colour);
+      if (y != center) { // Draw mirrored LED if off-center
+        int mirror_y = ROWS - 1 - y;
+        matrix.drawPixel(column, mirror_y, colour);
+      }
     }
   }
   matrix.show();
 }
-
-/* *************** OSC ************************************ */
 
 void drawRainbowOsc() {
   matrix.fillScreen(0);
@@ -591,13 +629,13 @@ void drawRainbowOsc() {
       // Apply gradient dim
       int dimLevels = 4;
       int steps = rows * ratio * dimLevels;
-      if (y == 0) {
+      if (num_lights == 1) {
         colour = DimColor(colour, (steps % dimLevels));
-      } else if (y == 1) {
+      } else if (num_lights == 2) {
         if (steps < 8) {
           colour = DimColor(colour, (steps % dimLevels));
         }
-      } else if (y == 2) {
+      } else if (num_lights == 3) {
         if (steps < 4) {
           colour = DimColor(colour, (steps % dimLevels));
         }
@@ -628,13 +666,13 @@ void drawClassicOsc() {
       // Apply gradient dim
       int dimLevels = 4;
       int steps = rows * ratio * dimLevels;
-      if (y == 0) {
+      if (num_lights == 1) {
         colour = DimColor(colour, (steps % dimLevels));
-      } else if (y == 1) {
+      } else if (num_lights == 2) {
         if (steps < 8) {
           colour = DimColor(colour, (steps % dimLevels));
         }
-      } else if (y == 2) {
+      } else if (num_lights == 3) {
         if (steps < 4) {
           colour = DimColor(colour, (steps % dimLevels));
         }
@@ -665,50 +703,13 @@ void drawCoolOsc() {
       // Apply gradient dim
       int dimLevels = 4;
       int steps = rows * ratio * dimLevels;
-      if (y == 0) {
+      if (num_lights == 1) {
         colour = DimColor(colour, (steps % dimLevels));
-      } else if (y == 1) {
+      } else if (num_lights == 2) {
         if (steps < 8) {
           colour = DimColor(colour, (steps % dimLevels));
         }
-      } else if (y == 2) {
-        if (steps < 4) {
-          colour = DimColor(colour, (steps % dimLevels));
-        }
-      }
-      
-      matrix.drawPixel(column, y, colour);
-      if (y != center) { // Draw mirrored LED if off-center
-        int mirror_y = ROWS - 1 - y;
-        matrix.drawPixel(column, mirror_y, colour);
-      }
-    }
-  }
-  matrix.show();
-}
-
-void drawPowerWheelOsc() {
-  matrix.fillScreen(0);
-  for (int column = 0; column < COLUMNS; column++) {
-    int level = getColumnLevel(column);
-    float ratio = calculateColumnRatio(column, level);
-    int num_lights = (ROWS * ratio) + 0.5; // Add 0.5 for lazy integer rounding-up
-    int center = ROWS / 2;
-    int rows = center + 1;
-    num_lights = (rows * ratio) + 0.5;
-    for (int y = (rows - num_lights); y < rows; y++) {
-      int colour = column_colours[(int)(7*ratio)];
-      
-      // Apply gradient dim
-      int dimLevels = 4;
-      int steps = rows * ratio * dimLevels;
-      if (y == 0) {
-        colour = DimColor(colour, (steps % dimLevels));
-      } else if (y == 1) {
-        if (steps < 8) {
-          colour = DimColor(colour, (steps % dimLevels));
-        }
-      } else if (y == 2) {
+      } else if (num_lights == 3) {
         if (steps < 4) {
           colour = DimColor(colour, (steps % dimLevels));
         }
@@ -726,6 +727,47 @@ void drawPowerWheelOsc() {
 
 /* *************** OSC TIPS ************************************ */
 
+void drawColorOscTips(int colour) {
+  matrix.fillScreen(0);
+  for (int column = 0; column < COLUMNS; column++) {
+    int level = getColumnLevel(column);
+    float ratio = calculateColumnRatio(column, level);
+    int num_lights = (ROWS * ratio) + 0.5; // Add 0.5 for lazy integer rounding-up
+    int center = ROWS / 2;
+    int rows = center + 1;
+    num_lights = (rows * ratio) + 0.5;
+    for (int y = (rows - num_lights); y < rows; y++) {
+      // Apply gradient dim
+      int dimLevels = 4;
+      int steps = rows * ratio * dimLevels;
+      if (num_lights == 1) {
+        colour = DimColor(colour, (steps % dimLevels));
+      } else if (num_lights == 2) {
+        if (steps < 8) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      } else if (num_lights == 3) {
+        if (steps < 4) {
+          colour = DimColor(colour, (steps % dimLevels));
+        }
+      }
+      
+      matrix.drawPixel(column, y, colour);
+      if (y != center) { // Draw mirrored LED if off-center
+        int mirror_y = ROWS - 1 - y;
+        matrix.drawPixel(column, mirror_y, colour);
+      }
+      
+      break; // Only draw peaks
+    }
+    
+    if (num_lights < 1) { // Always draw center row
+      matrix.drawPixel(column, center, colour);
+    }
+  }
+  matrix.show();
+}
+
 void drawRainbowOscTips() {
   matrix.fillScreen(0);
   for (int column = 0; column < COLUMNS; column++) {
@@ -741,13 +783,13 @@ void drawRainbowOscTips() {
       // Apply gradient dim
       int dimLevels = 4;
       int steps = rows * ratio * dimLevels;
-      if (y == 0) {
+      if (num_lights == 1) {
         colour = DimColor(colour, (steps % dimLevels));
-      } else if (y == 1) {
+      } else if (num_lights == 2) {
         if (steps < 8) {
           colour = DimColor(colour, (steps % dimLevels));
         }
-      } else if (y == 2) {
+      } else if (num_lights == 3) {
         if (steps < 4) {
           colour = DimColor(colour, (steps % dimLevels));
         }
@@ -785,13 +827,13 @@ void drawClassicOscTips() {
       // Apply gradient dim
       int dimLevels = 4;
       int steps = rows * ratio * dimLevels;
-      if (y == 0) {
+      if (num_lights == 1) {
         colour = DimColor(colour, (steps % dimLevels));
-      } else if (y == 1) {
+      } else if (num_lights == 2) {
         if (steps < 8) {
           colour = DimColor(colour, (steps % dimLevels));
         }
-      } else if (y == 2) {
+      } else if (num_lights == 3) {
         if (steps < 4) {
           colour = DimColor(colour, (steps % dimLevels));
         }
@@ -829,13 +871,13 @@ void drawCoolOscTips() {
       // Apply gradient dim
       int dimLevels = 4;
       int steps = rows * ratio * dimLevels;
-      if (y == 0) {
+      if (num_lights == 1) {
         colour = DimColor(colour, (steps % dimLevels));
-      } else if (y == 1) {
+      } else if (num_lights == 2) {
         if (steps < 8) {
           colour = DimColor(colour, (steps % dimLevels));
         }
-      } else if (y == 2) {
+      } else if (num_lights == 3) {
         if (steps < 4) {
           colour = DimColor(colour, (steps % dimLevels));
         }
@@ -858,7 +900,19 @@ void drawCoolOscTips() {
   matrix.show();
 }
 
-void drawPowerWheelOscTips() {
+/* *************** PRISMATIC ************************************ */
+
+int interpolateColor(int primary, int secondary, float sigma = 0.5) {
+  float alpha = sigma * 2.0;
+  float beta = (1 - sigma) * 2.0;
+  return matrix.Color(
+    (int)(Red(primary)*alpha + Red(secondary)*beta) / 2,
+    (int)(Green(primary)*alpha + Green(secondary)*beta) / 2,
+    (int)(Blue(primary)*alpha + Blue(secondary)*beta) / 2
+  );
+}
+
+void drawPrismOsc() {
   matrix.fillScreen(0);
   for (int column = 0; column < COLUMNS; column++) {
     int level = getColumnLevel(column);
@@ -868,18 +922,18 @@ void drawPowerWheelOscTips() {
     int rows = center + 1;
     num_lights = (rows * ratio) + 0.5;
     for (int y = (rows - num_lights); y < rows; y++) {
-      int colour = column_colours[(int)(7*ratio)];
+      int colour = interpolateColor(column_colours[column], column_colours[0], min(ratio+0.25, 1.0));
       
       // Apply gradient dim
       int dimLevels = 4;
       int steps = rows * ratio * dimLevels;
-      if (y == 0) {
+      if (num_lights == 1) {
         colour = DimColor(colour, (steps % dimLevels));
-      } else if (y == 1) {
+      } else if (num_lights == 2) {
         if (steps < 8) {
           colour = DimColor(colour, (steps % dimLevels));
         }
-      } else if (y == 2) {
+      } else if (num_lights == 3) {
         if (steps < 4) {
           colour = DimColor(colour, (steps % dimLevels));
         }
@@ -890,12 +944,10 @@ void drawPowerWheelOscTips() {
         int mirror_y = ROWS - 1 - y;
         matrix.drawPixel(column, mirror_y, colour);
       }
-      
-      break; // Only draw peaks
     }
     
     if (num_lights < 1) { // Always draw center row
-      int colour = column_colours[(int)(7*ratio)];
+      int colour = DimColor(column_colours[0]);
       matrix.drawPixel(column, center, colour);
     }
   }
@@ -904,82 +956,70 @@ void drawPowerWheelOscTips() {
 
 /* *************** MODES ************************************ */
 
-// VU Meter
-// Oscilloscope
+#define PRISM_OSC             1
 
-// Colour mode (column, row, power)
-
-// Classic
-// Rainbow
-// Cool
-
-// Single Colour
-// Axis
-
-#define RAINBOW_VU            11
-#define CLASSIC_VU            12
-#define COOL_VU               13
-#define POWER_WHEEL_VU        14
+#define WHITE_OSC             11
+#define RED_OSC               12
+#define ORANGE_OSC            13
+#define YELLOW_OSC            14
+#define GREEN_OSC             15
+#define TEAL_OSC              16
+#define BLUE_OSC              17
+#define PURPLE_OSC            18
 
 #define RAINBOW_OSC           21
 #define CLASSIC_OSC           22
 #define COOL_OSC              23
-#define POWER_WHEEL_OSC       24
 
-#define RAINBOW_OSC_TIPS      31
-#define CLASSIC_OSC_TIPS      32
-#define COOL_OSC_TIPS         33
-#define POWER_WHEEL_OSC_TIPS  34
+#define WHITE_OSC_TIPS        31
+#define RED_OSC_TIPS          32
+#define ORANGE_OSC_TIPS       33
+#define YELLOW_OSC_TIPS       34
+#define GREEN_OSC_TIPS        35
+#define TEAL_OSC_TIPS         36
+#define BLUE_OSC_TIPS         37
+#define PURPLE_OSC_TIPS       38
+
+#define RAINBOW_OSC_TIPS      41
+#define CLASSIC_OSC_TIPS      42
+#define COOL_OSC_TIPS         43
+
+#define RAINBOW_VU            2
+#define COOL_VU               3
+#define CLASSIC_VU            4
 
 int orderedPresets[] = {
-  /*
-  RAINBOW_VU,
-  CLASSIC_VU,
-  COOL_VU,
-  //POWER_WHEEL_VU,
+  PRISM_OSC,
   
+  WHITE_OSC,
+  RED_OSC,
+  ORANGE_OSC,
+  YELLOW_OSC,
+  GREEN_OSC,
+  TEAL_OSC,
+  BLUE_OSC,
+  PURPLE_OSC,
+
   RAINBOW_OSC,
   CLASSIC_OSC,
   COOL_OSC,
-  //POWER_WHEEL_OSC,
-  
+
+  WHITE_OSC_TIPS,
+  RED_OSC_TIPS,
+  ORANGE_OSC_TIPS,
+  YELLOW_OSC_TIPS,
+  GREEN_OSC_TIPS,
+  TEAL_OSC_TIPS,
+  BLUE_OSC_TIPS,
+  PURPLE_OSC_TIPS,
+
   RAINBOW_OSC_TIPS,
   CLASSIC_OSC_TIPS,
   COOL_OSC_TIPS,
-  //POWER_WHEEL_OSC_TIPS
-   */
-  /*
+
   RAINBOW_VU,
-  RAINBOW_OSC,
-  RAINBOW_OSC_TIPS,
-  
-  CLASSIC_VU,
-  CLASSIC_OSC,
-  CLASSIC_OSC_TIPS,
-  
   COOL_VU,
-  COOL_OSC,
-  COOL_OSC_TIPS,
-  
-  //POWER_WHEEL_VU,
-  //POWER_WHEEL_OSC,
-  //POWER_WHEEL_OSC_TIPS
-  */
-  RAINBOW_OSC_TIPS,
-  RAINBOW_OSC,
-  RAINBOW_VU,
-  
-  CLASSIC_OSC_TIPS,
-  CLASSIC_OSC,
-  CLASSIC_VU,
-  
-  COOL_OSC_TIPS,
-  COOL_OSC,
-  COOL_VU,
-  
-  //POWER_WHEEL_OSC_TIPS,
-  //POWER_WHEEL_OSC,
-  //POWER_WHEEL_VU,
+  CLASSIC_VU
 };
 int numPresets = sizeof(orderedPresets) / sizeof(int);
 
@@ -1010,17 +1050,32 @@ void cyclePreset(boolean forward = true) {
 
 void drawByPreset(int preset) {
   switch (preset) {
-    case RAINBOW_VU:
-      drawRainbowVu();
+    case PRISM_OSC:
+      drawPrismOsc();
       break;
-    case CLASSIC_VU:
-      drawClassicVu();
+    case WHITE_OSC:
+      drawColorOsc(column_colours[0]);
       break;
-    case COOL_VU:
-      drawCoolVu();
+    case RED_OSC:
+      drawColorOsc(column_colours[1]);
       break;
-    case POWER_WHEEL_VU:
-      drawPowerWheelVu();
+    case ORANGE_OSC:
+      drawColorOsc(column_colours[2]);
+      break;
+    case YELLOW_OSC:
+      drawColorOsc(column_colours[3]);
+      break;
+    case GREEN_OSC:
+      drawColorOsc(column_colours[4]);
+      break;
+    case TEAL_OSC:
+      drawColorOsc(column_colours[5]);
+      break;
+    case BLUE_OSC:
+      drawColorOsc(column_colours[6]);
+      break;
+    case PURPLE_OSC:
+      drawColorOsc(column_colours[7]);
       break;
       
     case RAINBOW_OSC:
@@ -1032,8 +1087,30 @@ void drawByPreset(int preset) {
     case COOL_OSC:
       drawCoolOsc();
       break;
-    case POWER_WHEEL_OSC:
-      drawPowerWheelOsc();
+      
+    case WHITE_OSC_TIPS:
+      drawColorOscTips(DimColor(column_colours[0]));
+      break;
+    case RED_OSC_TIPS:
+      drawColorOscTips(column_colours[2]);
+      break;
+    case ORANGE_OSC_TIPS:
+      drawColorOscTips(column_colours[3]);
+      break;
+    case YELLOW_OSC_TIPS:
+      drawColorOscTips(column_colours[4]);
+      break;
+    case GREEN_OSC_TIPS:
+      drawColorOscTips(column_colours[4]);
+      break;
+    case TEAL_OSC_TIPS:
+      drawColorOscTips(column_colours[5]);
+      break;
+    case BLUE_OSC_TIPS:
+      drawColorOscTips(column_colours[6]);
+      break;
+    case PURPLE_OSC_TIPS:
+      drawColorOscTips(column_colours[7]);
       break;
       
     case RAINBOW_OSC_TIPS:
@@ -1045,19 +1122,26 @@ void drawByPreset(int preset) {
     case COOL_OSC_TIPS:
       drawCoolOscTips();
       break;
-    case POWER_WHEEL_OSC_TIPS:
-      drawPowerWheelOscTips();
+    
+    case RAINBOW_VU:
+      drawRainbowVu();
+      break;
+    case CLASSIC_VU:
+      drawClassicVu();
+      break;
+    case COOL_VU:
+      drawCoolVu();
       break;
       
     default:
-      //drawByPreset(orderedPresets[defaultPresetIndex]); // don't curr
+      // Draw nothing
       break;
   }
 }
 
 /* *************** RUNTIME ************************************ */
 
-unsigned long lastDraw = millis();
+unsigned long lastDraw = millis() + 1500; // Force initial draw delay for 1500ms
 
 void handleEncoder() {
   uint8_t encoderTurn = rotaryEncoder.read();
@@ -1100,23 +1184,41 @@ void setup() {
 
   // Sensitivity Pot
   pinMode(PIN_SENSITIVITY, INPUT);
-  
-  // Init the spectrum analyzer
-  resetAnalyzer();
 
   // Init the matrix
   matrix.begin();
   matrix.setBrightness(BRIGHTNESS);
-  for (int c = COLUMNS-1; c >= 0; c--) {
-    for (int r = 0; r < ROWS; r++) {
+  for (int c = 0; c < COLUMNS; c++) {
+    delay(80);
+    int pixels;
+    if (c < COLUMNS-4) {
+      pixels = 1;
+    } else if (c < COLUMNS-2) {
+      pixels = 2;
+    } else {
+      pixels = 3;
+    }
+    for (int r = 2; r < pixels+2; r++) {
       matrix.drawPixel(c, r, column_colours[c]);
+      if (r != 2) {
+        matrix.drawPixel(c, 4-r, column_colours[c]);
+      }
     }
     matrix.show();
-    delay(150);
   }
-  delay(250);
-  matrix.fillScreen(0);
-  matrix.show();
-  delay(50);
+  delay(240);
+  for (int c = 0; c < COLUMNS; c++) {
+    delay(20);
+    for (int r = 0; r < ROWS; r++) {
+      matrix.drawPixel(c, r, 0);
+    }
+    matrix.show();
+    delay(20);
+    matrix.drawPixel(c, 2, DimColor(column_colours[0]));
+    matrix.show();
+  }
+  
+  // Init the spectrum analyzer
+  initAnalyzer();
 }
 
