@@ -38,6 +38,7 @@
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
 #include <MD_REncoder.h>
+#include <FlashStorage.h>
 
 /* *************** CONFIGURATION ************************************ */
 
@@ -1023,15 +1024,23 @@ int orderedPresets[] = {
 };
 int numPresets = sizeof(orderedPresets) / sizeof(int);
 
-int defaultPresetIndex = 0;
-int startingPresetIndex = defaultPresetIndex;
+uint8_t defaultPresetIndex = 0;
+uint8_t startingPresetIndex = defaultPresetIndex;
 
-int currentPresetIndex = startingPresetIndex;
+uint8_t currentPresetIndex = startingPresetIndex;
 int currentPreset = orderedPresets[startingPresetIndex];
+
+int millisBeforeSave = 5000; // 5 seconds
+unsigned long lastChangeTime = millis();
+boolean modeSaved = true;
+
+FlashStorage(lastModeFlash, uint8_t);
 
 void startPresetByIndex(int index) {
   currentPresetIndex = index;
   currentPreset = orderedPresets[index];
+  modeSaved = false;
+  lastChangeTime = millis();
 }
 
 void cyclePreset(boolean forward = true) {
@@ -1151,6 +1160,11 @@ void handleEncoder() {
 }
 
 void loop() {
+  if (!modeSaved && ((lastChangeTime + millisBeforeSave) < millis())) {
+    lastModeFlash.write(currentPresetIndex);
+    modeSaved = true;
+  }
+  
   readSpectrum();
   
   if (LOGGING_ENABLED && logCounter == TICKS_BETWEEN_LOGS) {
@@ -1184,6 +1198,16 @@ void setup() {
 
   // Sensitivity Pot
   pinMode(PIN_SENSITIVITY, INPUT);
+  
+  // Init the spectrum analyzer
+  initAnalyzer();
+
+  // Init the draw mode
+  uint8_t lastModeIndex = lastModeFlash.read();
+  if (lastModeIndex < 255) {
+    startPresetByIndex(lastModeIndex);
+    modeSaved = true;
+  }
 
   // Init the matrix
   matrix.begin();
@@ -1213,12 +1237,9 @@ void setup() {
       matrix.drawPixel(c, r, 0);
     }
     matrix.show();
-    delay(20);
-    matrix.drawPixel(c, 2, DimColor(column_colours[0]));
-    matrix.show();
+    //delay(20);
+    //matrix.drawPixel(c, 2, DimColor(column_colours[0]));
+    //matrix.show();
   }
-  
-  // Init the spectrum analyzer
-  initAnalyzer();
 }
 
