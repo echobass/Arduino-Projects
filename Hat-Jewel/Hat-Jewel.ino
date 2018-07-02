@@ -1,8 +1,8 @@
 #include <Adafruit_NeoPixel.h>
  
-#define PIN 0
+#define JEWEL_PIN 0
  
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(7, PIN, NEO_GRBW + NEO_KHZ800);
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(7, JEWEL_PIN, NEO_GRBW + NEO_KHZ800);
  
 void setup() {
   pixels.begin();
@@ -10,31 +10,46 @@ void setup() {
 }
  
 void loop() {
+  prismRainbow(10, 2);
   centerRainbow(2, 2);
-  ringRainbow(10, 2);
+  smarterRainbowScanner(40, 32, true);
+  smarterRainbowScanner(40, 32, false);
+  smarterRainbowScanner(40, 32, true);
+  ringRainbow(8, 2);
+  smarterRainbowScanner(60, 32, false);
+  smarterRainbowScanner(60, 64, true);
+  smarterRainbowScanner(60, 32, false);
+  ringRainbow(8, 1);
+  prismRainbow(10, 2);
+  ringRainbow(2, 1);
+  smarterRainbowScanner(80, 32, true);
+  centerRainbow(2, 2);
   prismRainbow(10, 2);
   fullRainbow(10, 2);
   prismRainbow(10, 2);
   prismRainbowCycle(2, 15);
   prismRainbowCycle(1, 30);
-    centerRainbow(10, 2);
+  centerRainbow(10, 2);
+  smarterRainbowScanner(60, 64, false);
+  centerRainbow(random(0, 3), random(1, 3));
   smarterRainbowScanner(60, 8, true);
-    centerRainbow(random(0, 5), random(1, 3));
+  centerRainbow(random(0, 3), random(1, 3));
   smarterRainbowScanner(40, 8, false);
-    centerRainbow(random(0, 5), random(1, 3));
+  centerRainbow(random(0, 3), random(1, 3));
   smarterRainbowScanner(80, 4, true);
-    centerRainbow(random(0, 5), random(1, 3));
+  centerRainbow(random(0, 3), random(1, 3));
   smarterRainbowScanner(80, 1, false);
-    centerRainbow(random(0, 5), random(1, 3));
+  centerRainbow(random(0, 3), random(1, 3));
   smarterRainbowScanner(40, 16, true);
-    centerRainbow(random(0, 5), random(1, 3));
+  centerRainbow(random(0, 3), random(1, 3));
   smarterRainbowScanner(60, 2, false);
-    centerRainbow(random(0, 5), random(1, 3));
+  centerRainbow(random(0, 3), random(1, 3));
   smarterRainbowScanner(20, 16, true);
-    centerRainbow(random(0, 5), random(1, 3));
+  centerRainbow(random(0, 3), random(1, 3));
   smarterRainbowScanner(60, 32, true);
-    centerRainbow(random(0, 5), random(1, 3));
-  prismRainbowCycle(1, 100);
+  centerRainbow(random(0, 3), random(1, 3));
+  prismRainbowCycle(1, 20);
+  fullRainbow(10, 2);
 }
 
 void prismRainbowCycle(uint8_t wait, uint32_t cycles) {
@@ -163,6 +178,10 @@ void smarterRainbowScanner(uint8_t wait, uint16_t increment, boolean forward) {
         pixels.setPixelColor(0, color);
         currentStep = 0;
       }
+      
+      if (random(100) < 20) {
+        forward = !forward;
+      }
 
       if (forward) {
         for (int i=1; i< pixels.numPixels(); i++) {
@@ -184,10 +203,6 @@ void smarterRainbowScanner(uint8_t wait, uint16_t increment, boolean forward) {
       
       pixels.show();
       delay(wait);
-      
-      if (random(100) < 20) {
-        forward = !forward;
-      }
     }
   }
 }
