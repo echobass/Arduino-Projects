@@ -1039,6 +1039,7 @@ FlashStorage(lastModeFlash, uint8_t);
 void startPresetByIndex(int index) {
   currentPresetIndex = index;
   currentPreset = orderedPresets[index];
+  
   modeSaved = false;
   lastChangeTime = millis();
 }
@@ -1150,7 +1151,7 @@ void drawByPreset(int preset) {
 
 /* *************** RUNTIME ************************************ */
 
-unsigned long lastDraw = millis() + 1500; // Force initial draw delay for 1500ms
+unsigned long lastDraw = millis() + 2000; // Force initial draw delay for 1500ms
 
 void handleEncoder() {
   uint8_t encoderTurn = rotaryEncoder.read();
@@ -1160,18 +1161,19 @@ void handleEncoder() {
 }
 
 void loop() {
-  if (!modeSaved && ((lastChangeTime + millisBeforeSave) < millis())) {
-    lastModeFlash.write(currentPresetIndex);
-    modeSaved = true;
-  }
+  unsigned long now = millis();
   
   readSpectrum();
   
   if (LOGGING_ENABLED && logCounter == TICKS_BETWEEN_LOGS) {
     logSpectrum();
   }
-    
-  unsigned long now = millis();
+  
+  if (!modeSaved && (now > (millisBeforeSave + lastChangeTime))) {
+    lastModeFlash.write(currentPresetIndex);
+    modeSaved = true;
+  }
+  
   if (now > (DRAW_DELAY_MS + lastDraw)) {
     drawByPreset(currentPreset);
     lastDraw = now;
@@ -1203,43 +1205,42 @@ void setup() {
   initAnalyzer();
 
   // Init the draw mode
-  uint8_t lastModeIndex = lastModeFlash.read();
-  if (lastModeIndex < 255) {
-    startPresetByIndex(lastModeIndex);
-    modeSaved = true;
+  uint8_t savedModeIndex = lastModeFlash.read();
+  if (savedModeIndex > 0 && savedModeIndex < numPresets) {
+    startPresetByIndex(savedModeIndex);
+    modeSaved = true; // Prevent re-saving
   }
 
   // Init the matrix
   matrix.begin();
   matrix.setBrightness(BRIGHTNESS);
   for (int c = 0; c < COLUMNS; c++) {
-    delay(80);
-    int pixels;
-    if (c < COLUMNS-4) {
-      pixels = 1;
-    } else if (c < COLUMNS-2) {
-      pixels = 2;
-    } else {
-      pixels = 3;
-    }
-    for (int r = 2; r < pixels+2; r++) {
-      matrix.drawPixel(c, r, column_colours[c]);
-      if (r != 2) {
-        matrix.drawPixel(c, 4-r, column_colours[c]);
-      }
-    }
+    matrix.drawPixel(c, 2, DimColor(c));
     matrix.show();
   }
-  delay(240);
+  for (int p = 0; p < COLUMNS; p++) {
+    delay(20);
+    for (int c = 0; c < COLUMNS; c++) {
+      delay(20);
+      if (c+p+1 >= COLUMNS) {
+        matrix.drawPixel(c, 2, DimColor(column_colours[0]));
+      } else {
+        matrix.drawPixel(c, 2, column_colours[p]);
+      }
+      matrix.show();
+    }
+  }
+  matrix.drawPixel(0, 2, DimColor(column_colours[0]));
+  //delay(240);
+
+  /*
   for (int c = 0; c < COLUMNS; c++) {
     delay(20);
     for (int r = 0; r < ROWS; r++) {
       matrix.drawPixel(c, r, 0);
     }
     matrix.show();
-    //delay(20);
-    //matrix.drawPixel(c, 2, DimColor(column_colours[0]));
-    //matrix.show();
   }
+  */
 }
 
