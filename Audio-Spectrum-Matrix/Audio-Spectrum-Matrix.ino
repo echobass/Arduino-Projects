@@ -10,13 +10,9 @@
  * - Pixel draw animation (incrementally manipulate LEDs as they move up and down)
  * - Pixel fade animation (LEDs dim over time after lighting up)
  * - 24bit colour
- * - Interrupt for input etc.
  * - Read and understand Sparkfun's advanced example
  * - Configurable settings for colours/effect/etc.
  * - Beat detection
- * - Microphone - right channel?
- * - Rotary dial for modes
- * - Pot for sensitivity
  * - Audio isolation
  * - Random flash/sparkle effect
  */
@@ -61,26 +57,6 @@
 // Data pin for LEDs
 #define PIN_NEOMATRIX 6
 
-// Spectrum specs
-#define BANDS 7 // Audio spectrum bands
-#define MAX_LEVEL 1023.0 // Max readable value for audio (analog) levels
-
-// Spectrum pins
-// For spectrum analyzer shield, these three pins are used.
-// You can move pinds 4 and 5, but you must cut the trace on the shield and re-route from the 2 jumpers
-#define PIN_SPECTRUM_RESET 5
-#define PIN_SPECTRUM_STROBE 4
-#define PIN_SPECTRUM_LEFT 0
-#define PIN_SPECTRUM_RIGHT 1
-int PIN_SPECTRUM_SOURCE = MIC_OVERRIDE ? PIN_SPECTRUM_RIGHT : PIN_SPECTRUM_LEFT;
-
-// Trailing averages, each calculated with the Counts below
-#define TRAILING_BUCKETS 3
-#define SHORT_AVERAGE 0
-#define MED_AVERAGE 1
-#define LONG_AVERAGE 2
-int trailingAverageCounts[TRAILING_BUCKETS] = {10, 100, 10000}; // # of ticks used to calculate averages
-
 // Sensitivity Adjustment
 #define PIN_SENSITIVITY 2
 
@@ -95,6 +71,38 @@ Button rotaryClick(PIN_ENCODER_SWITCH); // Connect your button between pin 2 and
 
 /* *************** GLOBAL VARS ************************************ */
 
+// Declare the neomatrix
+Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(COLUMNS, ROWS, PIN_NEOMATRIX,
+                                      NEO_MATRIX_TOP        + NEO_MATRIX_LEFT +
+                                      NEO_MATRIX_ROWS       + NEO_MATRIX_PROGRESSIVE,
+                                      NEO_GRBW              + NEO_KHZ800);
+
+// Init runtime vars
+int logCounter = 0;
+
+/* *************** SPECTRUM ************************************ */
+
+// Trailing averages, each calculated with the Counts below
+#define TRAILING_BUCKETS 2
+#define SHORT_AVERAGE 0
+#define MED_AVERAGE 1
+//#define LONG_AVERAGE 2
+//int trailingAverageCounts[TRAILING_BUCKETS] = {10, 100, 10000}; // # of ticks used to calculate averages
+int trailingAverageCounts[TRAILING_BUCKETS] = {10, 100}; // # of ticks used to calculate averages
+
+// Spectrum specs
+#define BANDS 7 // Audio spectrum bands
+#define MAX_LEVEL 1023.0 // Max readable value for audio (analog) levels
+
+// Spectrum pins
+// For spectrum analyzer shield, these three pins are used.
+// You can move pinds 4 and 5, but you must cut the trace on the shield and re-route from the 2 jumpers
+#define PIN_SPECTRUM_RESET 5
+#define PIN_SPECTRUM_STROBE 4
+#define PIN_SPECTRUM_LEFT 0
+#define PIN_SPECTRUM_RIGHT 1
+int PIN_SPECTRUM_SOURCE = MIC_OVERRIDE ? PIN_SPECTRUM_RIGHT : PIN_SPECTRUM_LEFT;
+
 // Spectrum analyzer frame values will be kept here
 int spectrum[BANDS];
 
@@ -106,23 +114,12 @@ float spectrumAverage;
 
 // Trailing averages
 float trailingSpectrumLevels[BANDS][TRAILING_BUCKETS];
-float trailingMinimums[TRAILING_BUCKETS];
+//float trailingMinimums[TRAILING_BUCKETS];
 float trailingMaximums[TRAILING_BUCKETS];
-float trailingSums[TRAILING_BUCKETS];
-float trailingAverages[TRAILING_BUCKETS];
+//float trailingSums[TRAILING_BUCKETS];
+//float trailingAverages[TRAILING_BUCKETS];
 
 float trailingWeightedSpectrumLevels[BANDS][TRAILING_BUCKETS];
-
-// Declare the neomatrix
-Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(COLUMNS, ROWS, PIN_NEOMATRIX,
-                                      NEO_MATRIX_TOP        + NEO_MATRIX_LEFT +
-                                      NEO_MATRIX_ROWS       + NEO_MATRIX_PROGRESSIVE,
-                                      NEO_GRBW              + NEO_KHZ800);
-
-// Init runtime vars
-int logCounter = 0;
-
-/* *************** SPECTRUM ************************************ */
 
 void calculateTrailingAverages(float bucketOfAverages[], float newValue) {
   for (int a = 0; a < TRAILING_BUCKETS; a++) {
@@ -177,7 +174,7 @@ void readSpectrum() {
   // Update all calculated trailing averages
   //calculateTrailingAverages(trailingMinimums, spectrumMin);
   calculateTrailingAverages(trailingMaximums, spectrumMax);
-  calculateTrailingAverages(trailingSums, spectrumSum);
+  //calculateTrailingAverages(trailingSums, spectrumSum);
   //calculateTrailingAverages(trailingAverages, spectrumAverage);
 }
 
@@ -958,9 +955,60 @@ void drawPrismOsc() {
   matrix.show();
 }
 
+/* *************** BEAT DRIVEN ************************************ */
+
+int currentBeatColor = 0;
+int lastBeatMillis = 0; // 1000ms (60pm) to 3000ms (180bpm)
+
+void drawRainbowOscBeat() {
+  unsigned long now = millis();
+  if ((now > lastBeatMillis+1000) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE])) {
+    currentBeatColor = (currentBeatColor + 1) % 8;
+    lastBeatMillis = now;
+  }
+  drawColorOsc(column_colours[currentBeatColor]);
+}
+
+void drawRainbowOscCrazy() {
+  if (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) {
+    currentBeatColor = (currentBeatColor + 1) % 8;
+  }
+  drawColorOsc(column_colours[currentBeatColor]);
+}
+
+void drawRainbowOscTipsBeat() {
+  unsigned long now = millis();
+  if ((now > lastBeatMillis+1000) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE])) {
+    currentBeatColor = (currentBeatColor + 1) % 8;
+    lastBeatMillis = now;
+  }
+  drawColorOscTips(column_colours[currentBeatColor]);
+}
+
+void drawRainbowOscTipsCrazy() {
+  unsigned long now = millis();
+  if (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) {
+    currentBeatColor = (currentBeatColor + 1) % 8;
+  }
+  if (currentBeatColor == 0) {
+    drawColorOscTips(DimColor(column_colours[currentBeatColor]));
+  } else {
+    drawColorOscTips(column_colours[currentBeatColor]);
+  }
+}
+
 /* *************** MODES ************************************ */
 
 #define PRISM_OSC             1
+
+#define RAINBOW_VU            2
+#define COOL_VU               3
+#define CLASSIC_VU            4
+
+#define RAINBOW_OSC_BEAT        5
+#define RAINBOW_OSC_CRAZY       6
+#define RAINBOW_OSC_TIPS_BEAT   7
+#define RAINBOW_OSC_TIPS_CRAZY  8
 
 #define WHITE_OSC             11
 #define RED_OSC               12
@@ -988,12 +1036,13 @@ void drawPrismOsc() {
 #define CLASSIC_OSC_TIPS      42
 #define COOL_OSC_TIPS         43
 
-#define RAINBOW_VU            2
-#define COOL_VU               3
-#define CLASSIC_VU            4
-
 int orderedPresets[] = {
   PRISM_OSC,
+  
+  RAINBOW_OSC_TIPS_BEAT,
+  RAINBOW_OSC_TIPS_CRAZY,
+  RAINBOW_OSC_BEAT,
+  RAINBOW_OSC_CRAZY,
   
   WHITE_OSC,
   RED_OSC,
@@ -1066,6 +1115,20 @@ void drawByPreset(int preset) {
     case PRISM_OSC:
       drawPrismOsc();
       break;
+
+    case RAINBOW_OSC_BEAT:
+      drawRainbowOscBeat();
+      break;
+    case RAINBOW_OSC_CRAZY:
+      drawRainbowOscCrazy();
+      break;
+    case RAINBOW_OSC_TIPS_BEAT:
+      drawRainbowOscTipsBeat();
+      break;
+    case RAINBOW_OSC_TIPS_CRAZY:
+      drawRainbowOscTipsCrazy();
+      break;
+
     case WHITE_OSC:
       drawColorOsc(column_colours[0]);
       break;
@@ -1175,12 +1238,13 @@ void loop() {
     modeSaved = true;
   }
   
-  if (now > (DRAW_DELAY_MS + lastDraw)) {
-    readSpectrum();
-    if (LOGGING_ENABLED && logCounter == TICKS_BETWEEN_LOGS) {
-      logSpectrum();
-    }
+  readSpectrum();
+  if (LOGGING_ENABLED && logCounter == TICKS_BETWEEN_LOGS) {
+    logSpectrum();
+  }
     
+  
+  if (now > (DRAW_DELAY_MS + lastDraw)) {
     drawByPreset(currentPreset);
     lastDraw = now;
   }
