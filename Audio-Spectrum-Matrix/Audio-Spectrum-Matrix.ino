@@ -253,7 +253,8 @@ float calculateColumnRatio(int column, int level) {
   // Read the sensitvity and calculate an adjustment
   // Flat reduction for all audio band levels, accounts for background and internal noise
   int sensitivityAdjustment = analogRead(PIN_SENSITIVITY);
-  sensitivityAdjustment = 64 + ((sensitivityAdjustment / MAX_LEVEL) * 256); // Baseline 64, Normalize to roughly 0-256
+  //sensitivityAdjustment = 64 + ((sensitivityAdjustment / MAX_LEVEL) * 256); // Baseline 64, Normalize to roughly 0-256
+  // For science: don't normalize (yet)
 
   // Adjust for baseline noise etc
   //  Keeps the board dark when silent
@@ -1104,13 +1105,13 @@ void drawByPreset(int preset) {
       drawColorOscTips(DimColor(column_colours[0]));
       break;
     case RED_OSC_TIPS:
-      drawColorOscTips(column_colours[2]);
+      drawColorOscTips(column_colours[1]);
       break;
     case ORANGE_OSC_TIPS:
-      drawColorOscTips(column_colours[3]);
+      drawColorOscTips(column_colours[2]);
       break;
     case YELLOW_OSC_TIPS:
-      drawColorOscTips(column_colours[4]);
+      drawColorOscTips(column_colours[3]);
       break;
     case GREEN_OSC_TIPS:
       drawColorOscTips(column_colours[4]);
@@ -1164,12 +1165,6 @@ void handleEncoder() {
 
 void loop() {
   unsigned long now = millis();
-  
-  readSpectrum();
-  
-  if (LOGGING_ENABLED && logCounter == TICKS_BETWEEN_LOGS) {
-    logSpectrum();
-  }
 
   if (rotaryClick.pressed()) {
     startPresetByIndex(defaultPresetIndex);
@@ -1181,6 +1176,11 @@ void loop() {
   }
   
   if (now > (DRAW_DELAY_MS + lastDraw)) {
+    readSpectrum();
+    if (LOGGING_ENABLED && logCounter == TICKS_BETWEEN_LOGS) {
+      logSpectrum();
+    }
+    
     drawByPreset(currentPreset);
     lastDraw = now;
   }
