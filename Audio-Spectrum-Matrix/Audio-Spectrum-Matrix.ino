@@ -962,7 +962,7 @@ int lastBeatMillis = 0; // 1000ms (60pm) to 3000ms (180bpm)
 
 void drawRainbowOscBeat() {
   unsigned long now = millis();
-  if ((now > lastBeatMillis+1000) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE])) {
+  if ((now > lastBeatMillis+1000) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) && (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
     currentBeatColor = (currentBeatColor + 1) % 8;
     lastBeatMillis = now;
   }
@@ -970,7 +970,7 @@ void drawRainbowOscBeat() {
 }
 
 void drawRainbowOscCrazy() {
-  if (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) {
+  if ((trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) || (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
     currentBeatColor = (currentBeatColor + 1) % 8;
   }
   drawColorOsc(column_colours[currentBeatColor]);
@@ -978,7 +978,7 @@ void drawRainbowOscCrazy() {
 
 void drawRainbowOscTipsBeat() {
   unsigned long now = millis();
-  if ((now > lastBeatMillis+1000) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE])) {
+  if ((now > lastBeatMillis+1000) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) && (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
     currentBeatColor = (currentBeatColor + 1) % 8;
     lastBeatMillis = now;
   }
@@ -987,7 +987,7 @@ void drawRainbowOscTipsBeat() {
 
 void drawRainbowOscTipsCrazy() {
   unsigned long now = millis();
-  if (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) {
+  if ((trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) || (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
     currentBeatColor = (currentBeatColor + 1) % 8;
   }
   if (currentBeatColor == 0) {
@@ -1039,11 +1039,6 @@ void drawRainbowOscTipsCrazy() {
 int orderedPresets[] = {
   PRISM_OSC,
   
-  RAINBOW_OSC_TIPS_BEAT,
-  RAINBOW_OSC_TIPS_CRAZY,
-  RAINBOW_OSC_BEAT,
-  RAINBOW_OSC_CRAZY,
-  
   WHITE_OSC,
   RED_OSC,
   ORANGE_OSC,
@@ -1056,6 +1051,9 @@ int orderedPresets[] = {
   RAINBOW_OSC,
   CLASSIC_OSC,
   COOL_OSC,
+  
+  RAINBOW_OSC_BEAT,
+  RAINBOW_OSC_CRAZY,
 
   WHITE_OSC_TIPS,
   RED_OSC_TIPS,
@@ -1069,6 +1067,9 @@ int orderedPresets[] = {
   RAINBOW_OSC_TIPS,
   CLASSIC_OSC_TIPS,
   COOL_OSC_TIPS,
+  
+  RAINBOW_OSC_TIPS_BEAT,
+  RAINBOW_OSC_TIPS_CRAZY,
 
   RAINBOW_VU,
   COOL_VU,
