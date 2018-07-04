@@ -958,11 +958,20 @@ void drawPrismOsc() {
 /* *************** BEAT DRIVEN ************************************ */
 
 int currentBeatColor = 0;
-int lastBeatMillis = 0; // 1000ms (60pm) to 3000ms (180bpm)
+int lastBeatMillis = 0; // 1000ms (60pm) to 333ms (180bpm)
 
 void drawRainbowOscBeat() {
   unsigned long now = millis();
-  if ((now > lastBeatMillis+1000) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) && (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
+  if ((now > lastBeatMillis+333) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) && (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
+    currentBeatColor = (currentBeatColor + 1) % 8;
+    lastBeatMillis = now;
+  }
+  drawColorOsc(column_colours[currentBeatColor]);
+}
+
+void drawRainbowOscBar() {
+  unsigned long now = millis();
+  if ((now > lastBeatMillis+1333) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) && (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
     currentBeatColor = (currentBeatColor + 1) % 8;
     lastBeatMillis = now;
   }
@@ -978,7 +987,16 @@ void drawRainbowOscCrazy() {
 
 void drawRainbowOscTipsBeat() {
   unsigned long now = millis();
-  if ((now > lastBeatMillis+1000) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) && (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
+  if ((now > lastBeatMillis+333) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) && (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
+    currentBeatColor = (currentBeatColor + 1) % 8;
+    lastBeatMillis = now;
+  }
+  drawColorOscTips(column_colours[currentBeatColor]);
+}
+
+void drawRainbowOscTipsBar() {
+  unsigned long now = millis();
+  if ((now > lastBeatMillis+1333) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) && (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
     currentBeatColor = (currentBeatColor + 1) % 8;
     lastBeatMillis = now;
   }
@@ -1005,11 +1023,6 @@ void drawRainbowOscTipsCrazy() {
 #define COOL_VU               3
 #define CLASSIC_VU            4
 
-#define RAINBOW_OSC_BEAT        5
-#define RAINBOW_OSC_CRAZY       6
-#define RAINBOW_OSC_TIPS_BEAT   7
-#define RAINBOW_OSC_TIPS_CRAZY  8
-
 #define WHITE_OSC             11
 #define RED_OSC               12
 #define ORANGE_OSC            13
@@ -1023,6 +1036,10 @@ void drawRainbowOscTipsCrazy() {
 #define CLASSIC_OSC           22
 #define COOL_OSC              23
 
+#define RAINBOW_OSC_BEAT      24
+#define RAINBOW_OSC_BAR       25
+#define RAINBOW_OSC_CRAZY     26
+
 #define WHITE_OSC_TIPS        31
 #define RED_OSC_TIPS          32
 #define ORANGE_OSC_TIPS       33
@@ -1035,6 +1052,10 @@ void drawRainbowOscTipsCrazy() {
 #define RAINBOW_OSC_TIPS      41
 #define CLASSIC_OSC_TIPS      42
 #define COOL_OSC_TIPS         43
+
+#define RAINBOW_OSC_TIPS_BEAT   44
+#define RAINBOW_OSC_TIPS_BAR    45
+#define RAINBOW_OSC_TIPS_CRAZY  46
 
 int orderedPresets[] = {
   PRISM_OSC,
@@ -1052,6 +1073,7 @@ int orderedPresets[] = {
   CLASSIC_OSC,
   COOL_OSC,
   
+  RAINBOW_OSC_BAR,
   RAINBOW_OSC_BEAT,
   RAINBOW_OSC_CRAZY,
 
@@ -1067,7 +1089,8 @@ int orderedPresets[] = {
   RAINBOW_OSC_TIPS,
   CLASSIC_OSC_TIPS,
   COOL_OSC_TIPS,
-  
+
+  RAINBOW_OSC_TIPS_BAR,
   RAINBOW_OSC_TIPS_BEAT,
   RAINBOW_OSC_TIPS_CRAZY,
 
@@ -1120,11 +1143,18 @@ void drawByPreset(int preset) {
     case RAINBOW_OSC_BEAT:
       drawRainbowOscBeat();
       break;
+    case RAINBOW_OSC_BAR:
+      drawRainbowOscBar();
+      break;
     case RAINBOW_OSC_CRAZY:
       drawRainbowOscCrazy();
       break;
+      
     case RAINBOW_OSC_TIPS_BEAT:
       drawRainbowOscTipsBeat();
+      break;
+    case RAINBOW_OSC_TIPS_BAR:
+      drawRainbowOscTipsBar();
       break;
     case RAINBOW_OSC_TIPS_CRAZY:
       drawRainbowOscTipsCrazy();
