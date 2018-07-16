@@ -40,10 +40,10 @@
 /* *************** CONFIGURATION ************************************ */
 
 // Behaviour configuration
-#define DRAW_DELAY_MS 25 // Set above 0 to delay some milliseconds, messes with spectrum measurements for some reason?
+#define DRAW_DELAY_MS 5 // Set above 0 to delay some milliseconds, messes with spectrum measurements for some reason?
 
 // Logging configuration
-#define LOGGING_ENABLED true // Logs to Serial 9600, slows things down though
+#define LOGGING_ENABLED false // Logs to Serial 9600, slows things down though
 #define TICKS_BETWEEN_LOGS 200 // Set above 0 to only log every so ticks
 
 // Display configuration
@@ -83,12 +83,13 @@ int logCounter = 0;
 /* *************** SPECTRUM ************************************ */
 
 // Trailing averages, each calculated with the Counts below
-#define TRAILING_BUCKETS 2
+//#define TRAILING_BUCKETS 2
+#define TRAILING_BUCKETS 3
 #define SHORT_AVERAGE 0
 #define MED_AVERAGE 1
-//#define LONG_AVERAGE 2
-//int trailingAverageCounts[TRAILING_BUCKETS] = {10, 100, 10000}; // # of ticks used to calculate averages
-int trailingAverageCounts[TRAILING_BUCKETS] = {10, 100}; // # of ticks used to calculate averages
+#define LONG_AVERAGE 2
+int trailingAverageCounts[TRAILING_BUCKETS] = {20, 100, 1000}; // # of ticks used to calculate averages
+//int trailingAverageCounts[TRAILING_BUCKETS] = {10, 100}; // # of ticks used to calculate averages
 
 // Spectrum specs
 #define BANDS 7 // Audio spectrum bands
@@ -117,7 +118,7 @@ float trailingSpectrumLevels[BANDS][TRAILING_BUCKETS];
 //float trailingMinimums[TRAILING_BUCKETS];
 float trailingMaximums[TRAILING_BUCKETS];
 //float trailingSums[TRAILING_BUCKETS];
-//float trailingAverages[TRAILING_BUCKETS];
+float trailingAverages[TRAILING_BUCKETS];
 
 float trailingWeightedSpectrumLevels[BANDS][TRAILING_BUCKETS];
 
@@ -175,7 +176,7 @@ void readSpectrum() {
   //calculateTrailingAverages(trailingMinimums, spectrumMin);
   calculateTrailingAverages(trailingMaximums, spectrumMax);
   //calculateTrailingAverages(trailingSums, spectrumSum);
-  //calculateTrailingAverages(trailingAverages, spectrumAverage);
+  calculateTrailingAverages(trailingAverages, spectrumAverage);
 }
 
 // Prints the band levels and average to Serial
@@ -300,93 +301,6 @@ float calculateColumnRatio(int column, int level) {
 
 /* *************** COLOURS ************************************ */
 
-// Tuned for 100 brightness
-const uint16_t column_colours[] = {
-  matrix.Color(255, 255, 255), // White
-  matrix.Color(255, 0, 0), // Red
-  matrix.Color(255, 102, 34), // Orange
-  matrix.Color(255, 218, 33), // Yellow
-  matrix.Color(51, 221, 0), // Green
-  matrix.Color(17, 180, 180), // Teal
-  matrix.Color(17, 70, 255), // Blue
-  matrix.Color(180, 0, 255) // Violet
-};
-
-// Tuned for 100 brightness
-const uint16_t classic_row_colours[] = {
-  matrix.Color(51, 221, 0), // Green
-  matrix.Color(51, 221, 0), // Green
-  matrix.Color(255, 218, 33), // Yellow
-  matrix.Color(255, 102, 34), // Orange
-  matrix.Color(255, 0, 0), // Red
-};
-
-// Tuned for 100 brightness
-const uint16_t cool1_row_colours[] = {
-  matrix.Color(255, 0, 0), // Red
-  matrix.Color(255, 218, 33), // Yellow
-  matrix.Color(51, 221, 0), // Green
-  matrix.Color(17, 70, 255), // Blue
-  matrix.Color(180, 0, 255), // Violet
-};
-
-// Tuned for 100 brightness
-const uint16_t coolx_row_colours[] = {
-  matrix.Color(255, 0, 0), // Red
-  matrix.Color(255, 218, 33), // Yellow
-  matrix.Color(51, 221, 0), // Green
-  matrix.Color(17, 70, 255), // Blue
-  matrix.Color(180, 0, 255), // Violet
-};
-
-// Tuned for 100 brightness
-const uint16_t cool_row_colours[] = {
-  matrix.Color(180, 0, 255), // Violet
-  matrix.Color(180, 0, 255), // Violet
-  matrix.Color(17, 70, 255), // Blue
-  matrix.Color(255, 0, 0), // Red
-  matrix.Color(255, 0, 0), // Red
-};
-
-// Colours manually tuned for 2/4 Brightness
-//  less than 2/4 causes gamma issues
-const uint16_t column_colours_dim[] = {
-  matrix.Color(100, 100, 100), // White
-  matrix.Color(100, 0, 0), // Red
-  matrix.Color(120, 40, 20), // Orange
-  matrix.Color(90, 80, 40), // Yellow
-  matrix.Color(10, 70, 0), // Green
-  matrix.Color(00, 80, 80), // Teal
-  matrix.Color(10, 0, 140), // Blue
-  matrix.Color(60, 0, 80) // Violet
-};
-
-// Colours manually tuned for 2/4 Brightness
-//  less than 2/4 causes gamma issues
-const uint16_t classic_row_colours_dim[] = {
-  matrix.Color(10, 70, 0), // Green
-  matrix.Color(10, 70, 0), // Green
-  matrix.Color(90, 80, 40), // Yellow
-  matrix.Color(120, 40, 20), // Orange
-  matrix.Color(100, 0, 0), // Red
-};
-
-static const uint8_t PROGMEM
-  gamma5[] = {
-    0x00,0x01,0x02,0x03,0x05,0x07,0x09,0x0b,
-    0x0e,0x11,0x14,0x18,0x1d,0x22,0x28,0x2e,
-    0x36,0x3d,0x46,0x4f,0x59,0x64,0x6f,0x7c,
-    0x89,0x97,0xa6,0xb6,0xc7,0xd9,0xeb,0xff },
-  gamma6[] = {
-    0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x08,
-    0x09,0x0a,0x0b,0x0d,0x0e,0x10,0x12,0x13,
-    0x15,0x17,0x19,0x1b,0x1d,0x20,0x22,0x25,
-    0x27,0x2a,0x2d,0x30,0x33,0x37,0x3a,0x3e,
-    0x41,0x45,0x49,0x4d,0x52,0x56,0x5b,0x5f,
-    0x64,0x69,0x6e,0x74,0x79,0x7f,0x85,0x8b,
-    0x91,0x97,0x9d,0xa4,0xab,0xb2,0xb9,0xc0,
-    0xc7,0xcf,0xd6,0xde,0xe6,0xee,0xf7,0xff };
-
 // Returns the Red component of a 16-bit color
 uint8_t Red(uint16_t color) {
     return (color >> 8) & 0xF8;
@@ -402,20 +316,26 @@ uint8_t Blue(uint16_t color) {
 
 // Return color (dimmed by 75% ???)
 uint16_t DimColor(uint16_t colour, int degree=1) {
+  if (degree <= 0) {
+    return colour;
+  }
+  
   // Get the components
   uint8_t red = Red(colour);
   uint8_t green = Green(colour);
   uint8_t blue = Blue(colour);
 
   int dimmedColour = matrix.Color(Red(colour) >> degree, Green(colour) >> degree, Blue(colour) >> degree);
-  //return dimmedColour;
+  return dimmedColour;
   
   // Only dim if there's room to
+  /*
   if (Red(dimmedColour) < 0x10 || Green(dimmedColour) < 0x10 || Blue(dimmedColour) < 0x10) {
     return colour;
   } else {
     return dimmedColour;
   }
+  */
 
   /*
   if (red > 0x10) red = red >> degree;
@@ -428,6 +348,36 @@ uint16_t DimColor(uint16_t colour, int degree=1) {
   //return matrix.Color(Red(colour) >> degree, Green(colour) >> degree, Blue(colour) >> degree);
   //return colour;
 }
+
+// Tuned for 100 brightness
+const uint16_t column_colours[] = {
+  matrix.Color(160, 140, 160), // White
+  matrix.Color(255, 0, 0), // Red
+  matrix.Color(255, 120, 50), // Orange
+  matrix.Color(230, 190, 30), // Yellow
+  matrix.Color(51, 221, 0), // Green
+  matrix.Color(17, 140, 180), // Teal
+  matrix.Color(17, 70, 255), // Blue
+  matrix.Color(200, 0, 210) // Violet
+};
+
+// Tuned for 100 brightness
+const uint16_t classic_row_colours[] = {
+  matrix.Color(51, 221, 0), // Green
+  matrix.Color(51, 221, 0), // Green
+  matrix.Color(230, 190, 30), // Yellow
+  matrix.Color(255, 120, 50), // Orange
+  matrix.Color(255, 0, 0), // Red
+};
+
+// Tuned for 100 brightness
+const uint16_t cool_row_colours[] = {
+  matrix.Color(180, 0, 255), // Violet
+  matrix.Color(180, 0, 255), // Violet
+  matrix.Color(17, 70, 255), // Blue
+  matrix.Color(255, 0, 0), // Red
+  matrix.Color(255, 0, 0), // Red
+};
 
 /* *************** DRAWING ************************************ */
 
@@ -590,21 +540,22 @@ void drawColorOsc(int colour) {
     int rows = center + 1;
     num_lights = (rows * ratio) + 0.5;
     for (int y = (rows - num_lights); y < rows; y++) {
+
       // Apply gradient dim
       int dimLevels = 4;
-      int steps = rows * ratio * dimLevels;
-      if (num_lights == 1) {
-        colour = DimColor(colour, (steps % dimLevels));
-      } else if (num_lights == 2) {
-        if (steps < 8) {
-          colour = DimColor(colour, (steps % dimLevels));
+      int totalSteps = rows * dimLevels;
+      int steps = totalSteps * ratio;
+      if (y == center - 1) {
+        if (steps <= 8) {
+          colour = DimColor(colour, (steps * 4) % dimLevels);
         }
-      } else if (num_lights == 3) {
-        if (steps < 4) {
-          colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == center - 2) {
+        if (steps <= 12) {
+          colour = DimColor(colour, (steps * 2) % dimLevels);
         }
       }
-      
+
+      // Draw pixel & mirror
       matrix.drawPixel(column, y, colour);
       if (y != center) { // Draw mirrored LED if off-center
         int mirror_y = ROWS - 1 - y;
@@ -626,19 +577,18 @@ void drawRainbowOsc() {
     num_lights = (rows * ratio) + 0.5;
     for (int y = (rows - num_lights); y < rows; y++) {
       int colour = column_colours[column];
-      
+
       // Apply gradient dim
       int dimLevels = 4;
-      int steps = rows * ratio * dimLevels;
-      if (num_lights == 1) {
-        colour = DimColor(colour, (steps % dimLevels));
-      } else if (num_lights == 2) {
-        if (steps < 8) {
-          colour = DimColor(colour, (steps % dimLevels));
+      int totalSteps = rows * dimLevels;
+      int steps = totalSteps * ratio;
+      if (y == center - 1) {
+        if (steps <= 8) {
+          colour = DimColor(colour, (steps * 2) % dimLevels);
         }
-      } else if (num_lights == 3) {
-        if (steps < 4) {
-          colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == center - 2) {
+        if (steps <= 12) {
+          colour = DimColor(colour, steps % dimLevels);
         }
       }
       
@@ -663,19 +613,18 @@ void drawClassicOsc() {
     num_lights = (rows * ratio) + 0.5;
     for (int y = (rows - num_lights); y < rows; y++) {
       int colour = classic_row_colours[ROWS-1-(int)(((y+0.5)/(float)rows)*ROWS)]; // Don't curr
-      
+
       // Apply gradient dim
       int dimLevels = 4;
-      int steps = rows * ratio * dimLevels;
-      if (num_lights == 1) {
-        colour = DimColor(colour, (steps % dimLevels));
-      } else if (num_lights == 2) {
-        if (steps < 8) {
-          colour = DimColor(colour, (steps % dimLevels));
+      int totalSteps = rows * dimLevels;
+      int steps = totalSteps * ratio;
+      if (y == center - 1) {
+        if (steps <= 8) {
+          colour = DimColor(colour, (steps * 2) % dimLevels);
         }
-      } else if (num_lights == 3) {
-        if (steps < 4) {
-          colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == center - 2) {
+        if (steps <= 12) {
+          colour = DimColor(colour, steps % dimLevels);
         }
       }
       
@@ -700,19 +649,18 @@ void drawCoolOsc() {
     num_lights = (rows * ratio) + 0.5;
     for (int y = (rows - num_lights); y < rows; y++) {
       int colour = cool_row_colours[ROWS-1-(int)(((y+0.5)/(float)rows)*ROWS)]; // Don't curr
-      
+
       // Apply gradient dim
       int dimLevels = 4;
-      int steps = rows * ratio * dimLevels;
-      if (num_lights == 1) {
-        colour = DimColor(colour, (steps % dimLevels));
-      } else if (num_lights == 2) {
-        if (steps < 8) {
-          colour = DimColor(colour, (steps % dimLevels));
+      int totalSteps = rows * dimLevels;
+      int steps = totalSteps * ratio;
+      if (y == center - 1) {
+        if (steps <= 8) {
+          colour = DimColor(colour, (steps * 2) % dimLevels);
         }
-      } else if (num_lights == 3) {
-        if (steps < 4) {
-          colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == center - 2) {
+        if (steps <= 12) {
+          colour = DimColor(colour, steps % dimLevels);
         }
       }
       
@@ -738,18 +686,18 @@ void drawColorOscTips(int colour) {
     int rows = center + 1;
     num_lights = (rows * ratio) + 0.5;
     for (int y = (rows - num_lights); y < rows; y++) {
+
       // Apply gradient dim
       int dimLevels = 4;
-      int steps = rows * ratio * dimLevels;
-      if (num_lights == 1) {
-        colour = DimColor(colour, (steps % dimLevels));
-      } else if (num_lights == 2) {
-        if (steps < 8) {
-          colour = DimColor(colour, (steps % dimLevels));
+      int totalSteps = rows * dimLevels;
+      int steps = totalSteps * ratio;
+      if (y == center - 1) {
+        if (steps <= 8) {
+          colour = DimColor(colour, (steps * 2) % dimLevels);
         }
-      } else if (num_lights == 3) {
-        if (steps < 4) {
-          colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == center - 2) {
+        if (steps <= 12) {
+          colour = DimColor(colour, steps % dimLevels);
         }
       }
       
@@ -780,19 +728,18 @@ void drawRainbowOscTips() {
     num_lights = (rows * ratio) + 0.5;
     for (int y = (rows - num_lights); y < rows; y++) {
       int colour = column_colours[column];
-      
+
       // Apply gradient dim
       int dimLevels = 4;
-      int steps = rows * ratio * dimLevels;
-      if (num_lights == 1) {
-        colour = DimColor(colour, (steps % dimLevels));
-      } else if (num_lights == 2) {
-        if (steps < 8) {
-          colour = DimColor(colour, (steps % dimLevels));
+      int totalSteps = rows * dimLevels;
+      int steps = totalSteps * ratio;
+      if (y == center - 1) {
+        if (steps <= 8) {
+          colour = DimColor(colour, (steps * 2) % dimLevels);
         }
-      } else if (num_lights == 3) {
-        if (steps < 4) {
-          colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == center - 2) {
+        if (steps <= 12) {
+          colour = DimColor(colour, steps % dimLevels);
         }
       }
       
@@ -824,19 +771,18 @@ void drawClassicOscTips() {
     num_lights = (rows * ratio) + 0.5;
     for (int y = (rows - num_lights); y < rows; y++) {
       int colour = classic_row_colours[ROWS-1-(int)(((y+0.5)/(float)rows)*ROWS)]; // Don't curr
-      
+
       // Apply gradient dim
       int dimLevels = 4;
-      int steps = rows * ratio * dimLevels;
-      if (num_lights == 1) {
-        colour = DimColor(colour, (steps % dimLevels));
-      } else if (num_lights == 2) {
-        if (steps < 8) {
-          colour = DimColor(colour, (steps % dimLevels));
+      int totalSteps = rows * dimLevels;
+      int steps = totalSteps * ratio;
+      if (y == center - 1) {
+        if (steps <= 8) {
+          colour = DimColor(colour, (steps * 2) % dimLevels);
         }
-      } else if (num_lights == 3) {
-        if (steps < 4) {
-          colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == center - 2) {
+        if (steps <= 12) {
+          colour = DimColor(colour, steps % dimLevels);
         }
       }
       
@@ -868,19 +814,18 @@ void drawCoolOscTips() {
     num_lights = (rows * ratio) + 0.5;
     for (int y = (rows - num_lights); y < rows; y++) {
       int colour = cool_row_colours[ROWS-1-(int)(((y+0.5)/(float)rows)*ROWS)]; // Don't curr
-      
+
       // Apply gradient dim
       int dimLevels = 4;
-      int steps = rows * ratio * dimLevels;
-      if (num_lights == 1) {
-        colour = DimColor(colour, (steps % dimLevels));
-      } else if (num_lights == 2) {
-        if (steps < 8) {
-          colour = DimColor(colour, (steps % dimLevels));
+      int totalSteps = rows * dimLevels;
+      int steps = totalSteps * ratio;
+      if (y == center - 1) {
+        if (steps <= 8) {
+          colour = DimColor(colour, (steps * 2) % dimLevels);
         }
-      } else if (num_lights == 3) {
-        if (steps < 4) {
-          colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == center - 2) {
+        if (steps <= 12) {
+          colour = DimColor(colour, steps % dimLevels);
         }
       }
       
@@ -901,9 +846,80 @@ void drawCoolOscTips() {
   matrix.show();
 }
 
+/* *************** BEAT DRIVEN ************************************ */
+
+int currentBeatColor = 0;
+int currentStartColourIndex = 1; // Intended to be 1-7 (red-violet, no white)
+
+int lastBeatMillis = 0; // 1000ms (60pm) to 333ms (180bpm)
+int lastTriggerBeatMillis = 0; // eg: bar = beat * 4
+
+void detectBeat(int multiplyer) {
+  unsigned long now = millis();
+
+  int numBandPeaks = 0;
+  int requiredBandPeaks = 3;
+  
+  boolean isBeat = now > (lastBeatMillis + 333);
+
+  isBeat &= (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE])
+           && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[LONG_AVERAGE])
+           && (trailingMaximums[SHORT_AVERAGE] > spectrumAverage);
+
+  isBeat &= (trailingAverages[SHORT_AVERAGE] > trailingAverages[MED_AVERAGE])
+           && (trailingAverages[SHORT_AVERAGE] > trailingAverages[LONG_AVERAGE])
+           && (trailingAverages[SHORT_AVERAGE] > spectrumAverage);
+
+  if (isBeat) {
+    for (int b = 0; b < BANDS; b++) {
+      if ((trailingSpectrumLevels[b][SHORT_AVERAGE] > trailingSpectrumLevels[b][MED_AVERAGE])
+           && (trailingSpectrumLevels[b][SHORT_AVERAGE] > trailingSpectrumLevels[b][LONG_AVERAGE])
+           && (trailingSpectrumLevels[b][SHORT_AVERAGE] > spectrum[b])
+           ) {
+        numBandPeaks += 1;
+      }
+    }
+    isBeat &= (numBandPeaks >= requiredBandPeaks);
+  }
+  
+  if (isBeat) {
+    lastBeatMillis = now;
+    if (now > lastTriggerBeatMillis + (333 * multiplyer)) {
+      currentBeatColor = (currentBeatColor + 1) % 8;
+      currentStartColourIndex = ((currentStartColourIndex + 1) % 7) + 1;
+      lastTriggerBeatMillis = now;
+    }
+  }
+}
+
+void drawRainbowOscBeat() {
+  detectBeat(1);
+  drawColorOsc(column_colours[currentBeatColor]);
+}
+
+void drawRainbowOscBar() {
+  detectBeat(4);
+  drawColorOsc(column_colours[currentBeatColor]);
+}
+
+void drawRainbowOscTipsBeat() {
+  detectBeat(1);
+  drawColorOscTips(column_colours[currentBeatColor]);
+}
+
+void drawRainbowOscTipsBar() {
+  detectBeat(4);
+  drawColorOscTips(column_colours[currentBeatColor]);
+}
+
 /* *************** PRISMATIC ************************************ */
 
 int interpolateColor(int primary, int secondary, float sigma = 0.5) {
+  if (sigma <= 0) {
+    return primary;
+  } else if (sigma >= 1) {
+    return secondary;
+  }
   float alpha = sigma * 2.0;
   float beta = (1 - sigma) * 2.0;
   return matrix.Color(
@@ -914,6 +930,8 @@ int interpolateColor(int primary, int secondary, float sigma = 0.5) {
 }
 
 void drawPrismOsc() {
+  detectBeat(4);
+  
   matrix.fillScreen(0);
   for (int column = 0; column < COLUMNS; column++) {
     int level = getColumnLevel(column);
@@ -922,21 +940,27 @@ void drawPrismOsc() {
     int center = ROWS / 2;
     int rows = center + 1;
     num_lights = (rows * ratio) + 0.5;
+    
+    int colour;
+    if (column == 0) {
+      colour = interpolateColor(matrix.Color(0, 0, 0), column_colours[0], max((spectrumMax)/trailingMaximums[MED_AVERAGE], (spectrumAverage)/trailingAverages[SHORT_AVERAGE]));
+    } else {
+      colour = interpolateColor(column_colours[0], column_colours[(((currentStartColourIndex - column) + 7) % 7) + 1], max((spectrumMax)/trailingMaximums[MED_AVERAGE], (spectrumAverage)/trailingAverages[SHORT_AVERAGE]));
+    }
+    
     for (int y = (rows - num_lights); y < rows; y++) {
-      int colour = interpolateColor(column_colours[column], column_colours[0], min(ratio+0.25, 1.0));
-      
+
       // Apply gradient dim
       int dimLevels = 4;
-      int steps = rows * ratio * dimLevels;
-      if (num_lights == 1) {
-        colour = DimColor(colour, (steps % dimLevels));
-      } else if (num_lights == 2) {
-        if (steps < 8) {
-          colour = DimColor(colour, (steps % dimLevels));
+      int totalSteps = rows * dimLevels;
+      int steps = totalSteps * ratio;
+      if (y == center - 1) {
+        if (steps <= 8) {
+          colour = DimColor(colour, (steps * 2) % dimLevels);
         }
-      } else if (num_lights == 3) {
-        if (steps < 4) {
-          colour = DimColor(colour, (steps % dimLevels));
+      } else if (y == center - 2) {
+        if (steps <= 12) {
+          colour = DimColor(colour, steps % dimLevels);
         }
       }
       
@@ -948,71 +972,12 @@ void drawPrismOsc() {
     }
     
     if (num_lights < 1) { // Always draw center row
-      int colour = DimColor(column_colours[0]);
-      matrix.drawPixel(column, center, colour);
+      if (column != 0) {
+        matrix.drawPixel(column, center, colour);
+      }
     }
   }
   matrix.show();
-}
-
-/* *************** BEAT DRIVEN ************************************ */
-
-int currentBeatColor = 0;
-int lastBeatMillis = 0; // 1000ms (60pm) to 333ms (180bpm)
-
-void drawRainbowOscBeat() {
-  unsigned long now = millis();
-  if ((now > lastBeatMillis+333) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) && (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
-    currentBeatColor = (currentBeatColor + 1) % 8;
-    lastBeatMillis = now;
-  }
-  drawColorOsc(column_colours[currentBeatColor]);
-}
-
-void drawRainbowOscBar() {
-  unsigned long now = millis();
-  if ((now > lastBeatMillis+1333) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) && (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
-    currentBeatColor = (currentBeatColor + 1) % 8;
-    lastBeatMillis = now;
-  }
-  drawColorOsc(column_colours[currentBeatColor]);
-}
-
-void drawRainbowOscCrazy() {
-  if ((trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) || (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
-    currentBeatColor = (currentBeatColor + 1) % 8;
-  }
-  drawColorOsc(column_colours[currentBeatColor]);
-}
-
-void drawRainbowOscTipsBeat() {
-  unsigned long now = millis();
-  if ((now > lastBeatMillis+333) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) && (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
-    currentBeatColor = (currentBeatColor + 1) % 8;
-    lastBeatMillis = now;
-  }
-  drawColorOscTips(column_colours[currentBeatColor]);
-}
-
-void drawRainbowOscTipsBar() {
-  unsigned long now = millis();
-  if ((now > lastBeatMillis+1333) && (trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) && (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
-    currentBeatColor = (currentBeatColor + 1) % 8;
-    lastBeatMillis = now;
-  }
-  drawColorOscTips(column_colours[currentBeatColor]);
-}
-
-void drawRainbowOscTipsCrazy() {
-  unsigned long now = millis();
-  if ((trailingMaximums[SHORT_AVERAGE] > trailingMaximums[MED_AVERAGE]) || (trailingMaximums[SHORT_AVERAGE] > spectrumMax)) {
-    currentBeatColor = (currentBeatColor + 1) % 8;
-  }
-  if (currentBeatColor == 0) {
-    drawColorOscTips(DimColor(column_colours[currentBeatColor]));
-  } else {
-    drawColorOscTips(column_colours[currentBeatColor]);
-  }
 }
 
 /* *************** MODES ************************************ */
@@ -1038,7 +1003,6 @@ void drawRainbowOscTipsCrazy() {
 
 #define RAINBOW_OSC_BEAT      24
 #define RAINBOW_OSC_BAR       25
-#define RAINBOW_OSC_CRAZY     26
 
 #define WHITE_OSC_TIPS        31
 #define RED_OSC_TIPS          32
@@ -1055,7 +1019,6 @@ void drawRainbowOscTipsCrazy() {
 
 #define RAINBOW_OSC_TIPS_BEAT   44
 #define RAINBOW_OSC_TIPS_BAR    45
-#define RAINBOW_OSC_TIPS_CRAZY  46
 
 int orderedPresets[] = {
   PRISM_OSC,
@@ -1075,7 +1038,6 @@ int orderedPresets[] = {
   
   RAINBOW_OSC_BAR,
   RAINBOW_OSC_BEAT,
-  RAINBOW_OSC_CRAZY,
 
   WHITE_OSC_TIPS,
   RED_OSC_TIPS,
@@ -1092,7 +1054,6 @@ int orderedPresets[] = {
 
   RAINBOW_OSC_TIPS_BAR,
   RAINBOW_OSC_TIPS_BEAT,
-  RAINBOW_OSC_TIPS_CRAZY,
 
   RAINBOW_VU,
   COOL_VU,
@@ -1146,18 +1107,12 @@ void drawByPreset(int preset) {
     case RAINBOW_OSC_BAR:
       drawRainbowOscBar();
       break;
-    case RAINBOW_OSC_CRAZY:
-      drawRainbowOscCrazy();
-      break;
       
     case RAINBOW_OSC_TIPS_BEAT:
       drawRainbowOscTipsBeat();
       break;
     case RAINBOW_OSC_TIPS_BAR:
       drawRainbowOscTipsBar();
-      break;
-    case RAINBOW_OSC_TIPS_CRAZY:
-      drawRainbowOscTipsCrazy();
       break;
 
     case WHITE_OSC:
@@ -1196,7 +1151,7 @@ void drawByPreset(int preset) {
       break;
       
     case WHITE_OSC_TIPS:
-      drawColorOscTips(DimColor(column_colours[0]));
+      drawColorOscTips(column_colours[0]);
       break;
     case RED_OSC_TIPS:
       drawColorOscTips(column_colours[1]);
@@ -1248,7 +1203,7 @@ void drawByPreset(int preset) {
 
 /* *************** RUNTIME ************************************ */
 
-unsigned long lastDraw = millis() + 2000; // Force initial draw delay for 1500ms
+unsigned long lastDraw = millis() + 1000; // Force initial draw delay for 1500ms
 
 void handleEncoder() {
   uint8_t encoderTurn = rotaryEncoder.read();
@@ -1272,8 +1227,7 @@ void loop() {
   readSpectrum();
   if (LOGGING_ENABLED && logCounter == TICKS_BETWEEN_LOGS) {
     logSpectrum();
-  }
-    
+  } 
   
   if (now > (DRAW_DELAY_MS + lastDraw)) {
     drawByPreset(currentPreset);
@@ -1322,9 +1276,9 @@ void setup() {
     matrix.show();
   }
   for (int p = 0; p < COLUMNS; p++) {
-    delay(20);
+    delay(15);
     for (int c = 0; c < COLUMNS; c++) {
-      delay(20);
+      delay(10);
       if (c+p+1 >= COLUMNS) {
         matrix.drawPixel(c, 2, DimColor(column_colours[0]));
       } else {
