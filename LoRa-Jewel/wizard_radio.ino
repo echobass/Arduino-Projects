@@ -77,9 +77,9 @@ class RaveNode {
   void Run() {
     unsigned long currentMs = millis();
     if ((callable == TX_MODE) && (shouldRun())) {
-      transmit();
+      transmit(currentMs, OnTime);
     } else if ((callable == RX_MODE) && (shouldRun())) {
-      receive();
+      receive(currentMs, OnTime);
     } else if ((callable == DRAW_MODE) && (shouldRun())) {
       colorThings();
     }
@@ -92,7 +92,7 @@ RH_RF95 rf95(RFM95_CS, RFM95_INT);
 // Setup workers, durations will definitley need to be tuned
 RaveNode sender(TX_MODE, 1000, 10000); // method, on time, off time
 RaveNode receiver(RX_MODE, 60000, 10000);
-RaveNode lights(DRAW_MODE, 60000, 5000);
+RaveNode lights(DRAW_MODE, 40000, 5000);
 
 void setupRadio() {
   pinMode(RFM95_RST, OUTPUT);
@@ -137,43 +137,50 @@ void loop() {
   lights.Run();
 }
 
+int16_t packetnum = 0;
 
-void transmit() {
-
-  char radiopacket[5] = CURR_WIZ;
-  itoa(packetnum++, radiopacket+13, 10);
-  Serial.print("Sending "); 
-  Serial.println(radiopacket);
-  radiopacket[19] = 0;
-
-  Serial.println("Sending...");
-  delay(10);
-  rf95.send((uint8_t *)radiopacket, 20);
-
-  Serial.println("Waiting for packet to complete..."); 
-  delay(10);
-  rf95.waitPacketSent();
-
+void transmit(unsigned long startTime, long duration) {
+  long endTime = startTime + duration;
+  // send packets for set duration
+  while (millis() <= endTime) {
+    char radiopacket[5] = CURR_WIZ;
+    itoa(packetnum++, radiopacket+13, 10);
+    Serial.print("Sending "); 
+    Serial.println(radiopacket);
+    radiopacket[19] = 0;
+  
+    Serial.println("Sending...");
+    delay(10);
+    rf95.send((uint8_t *)radiopacket, 20);
+  
+    Serial.println("Waiting for packet to complete..."); 
+    delay(10);
+    rf95.waitPacketSent();
+  }
 }
 
-void receive() {
-  if (rf95.available())
-  {
-    // Should be a message for us now
-    uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
-    uint8_t len = sizeof(buf);
- 
-    if (rf95.recv(buf, &len)) {
-      digitalWrite(LED, HIGH);
-      RH_RF95::printBuffer("Received: ", buf, len);
-      Serial.print("Got: ");
-      Serial.println((char*)buf);
-      Serial.print("RSSI: ");
-      Serial.println(rf95.lastRssi(), DEC);
-
-      updateColors((char*)buf, rf95.lastRssi());      
-    } else {
-      Serial.println("Receive failed");
+void receive(unsigned long startTime, long duration) {
+  long endTime = startTime + duration;
+  // receive packets for set duration, allow for multiple position updates
+  while (millis() <= endTime) {
+    if (rf95.available())
+    {
+      // Should be a message for us now
+      uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+      uint8_t len = sizeof(buf);
+   
+      if (rf95.recv(buf, &len)) {
+        digitalWrite(LED, HIGH);
+        RH_RF95::printBuffer("Received: ", buf, len);
+        Serial.print("Got: ");
+        Serial.println((char*)buf);
+        Serial.print("RSSI: ");
+        Serial.println(rf95.lastRssi(), DEC);
+        //update global color vars ie. RED_DIST
+        updateColors((char*)buf, rf95.lastRssi());      
+      } else {
+        Serial.println("Receive failed");
+      }
     }
   }
 }
@@ -217,6 +224,7 @@ void drawColors(uint8_t wait, uint32_t cycles) {
   for (int c = 0; c < cycles; c++) {
     for (int color = 0; color < 1024; color++) {
       for (int led = 0; led < pixels.numPixels() - 1; led++) {
+        //replace with coloSHARE
         pixels.setPixelColor(led, RgbwBigWheel(color+led));
       }
       
