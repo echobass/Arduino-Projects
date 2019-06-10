@@ -13,18 +13,20 @@
 #define RF95_FREQ 915.0
 
 // Used for wizard id by receiver, might be simpler to assign a number
-#define BLUE_WIZ "blue  "
-#define GREEN_WIZ "green "
-#define RED_WIZ "red   "
-#define PURP_WIZ "purple"
+#define BLUE_WIZ "blue  ";
+#define GREEN_WIZ "green ";
+#define RED_WIZ "red   ";
+#define PURP_WIZ "purple";
 // Transmitting wizard
-#define CURR_WIZ = BLUE_WIZ
+#define CURR_WIZ BLUE_WIZ;
 
-#define TX_COLOR = roygtbv[5]
+#define TX_COLOR roygtbv[5];
 
 // Lights
-#define JEWEL_PIN 0
+#define JEWEL_PIN 0;
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(7, JEWEL_PIN, NEO_GRBW + NEO_KHZ800);
+#define DRAW_WAIT 1;
+#define DRAW_CYCLES 20;
 
 // determine method to call from RaveNodes
 #define TX_MODE 0;
@@ -41,6 +43,7 @@ Adafruit_NeoPixel pixels = Adafruit_NeoPixel(7, JEWEL_PIN, NEO_GRBW + NEO_KHZ800
 int BLUE_DIST = 0;  // set broadcasting color to 0
 int RED_DIST = 99; // init other colors 
 int GREEN_DIST = 99;
+uint32_t COLOR_ARRAY[pixels.numPixels()];
 
 
 class RaveNode {
@@ -81,7 +84,7 @@ class RaveNode {
     } else if ((callable == RX_MODE) && (shouldRun())) {
       receive(currentMs, OnTime);
     } else if ((callable == DRAW_MODE) && (shouldRun())) {
-      colorThings();
+      drawColors(DRAW_WAIT, DRAW_CYCLES);
     }
   }
 }
@@ -145,15 +148,15 @@ void transmit(unsigned long startTime, long duration) {
   while (millis() <= endTime) {
     char radiopacket[5] = CURR_WIZ;
     itoa(packetnum++, radiopacket+13, 10);
-    Serial.print("Sending "); 
+    Serial.print("Sending ");
     Serial.println(radiopacket);
     radiopacket[19] = 0;
-  
+
     Serial.println("Sending...");
     delay(10);
     rf95.send((uint8_t *)radiopacket, 20);
-  
-    Serial.println("Waiting for packet to complete..."); 
+
+    Serial.println("Waiting for packet to complete...");
     delay(10);
     rf95.waitPacketSent();
   }
@@ -168,7 +171,7 @@ void receive(unsigned long startTime, long duration) {
       // Should be a message for us now
       uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
       uint8_t len = sizeof(buf);
-   
+
       if (rf95.recv(buf, &len)) {
         digitalWrite(LED, HIGH);
         RH_RF95::printBuffer("Received: ", buf, len);
@@ -177,7 +180,7 @@ void receive(unsigned long startTime, long duration) {
         Serial.print("RSSI: ");
         Serial.println(rf95.lastRssi(), DEC);
         //update global color vars ie. RED_DIST
-        updateColors((char*)buf, rf95.lastRssi());      
+        updateColors((char*)buf, rf95.lastRssi());
       } else {
         Serial.println("Receive failed");
       }
@@ -219,22 +222,23 @@ void updateColors(char *rx_color[], int rx_pow) {
 }
 
 void drawColors(uint8_t wait, uint32_t cycles) {
+  calcColorShare();
   //set Jewel center to transmitter color
   pixels.setPixelColor(pixels.numPixels(), TX_COLOR);
   for (int c = 0; c < cycles; c++) {
-    for (int color = 0; color < 1024; color++) {
-      for (int led = 0; led < pixels.numPixels() - 1; led++) {
-        //replace with coloSHARE
-        pixels.setPixelColor(led, RgbwBigWheel(color+led));
-      }
-      
-      pixels.show();
-      delay(wait);
+    //only draw outer leds, center stays as tx color
+    for (int led = 0; led < pixels.numPixels() - 1; led++) {
+      pixels.setPixelColor(led, COLOR_ARRAY[led]);
+    }
+    
+    pixels.show();
+    delay(wait);
     }
   }
 }
 
-uint32_t calcColorShare() {
+// Determine amount of each color to draw based on distance vars
+void calcColorShare() {
   int num_red = 0;
   int num_green = 0;
   if (RED_DIST == DIST_FAR) {
@@ -253,18 +257,17 @@ uint32_t calcColorShare() {
     //interpolate colors or some such
   }
 
-  int color_array[pixels.numPixels()];
   int index1;
   if (num_red != 0) {
      for (int i = 0; i < num_red; i++) {
-      color_array[i] = roygtbv[0];
+      COLOR_ARRAY[i] = roygtbv[0];
       index1 = i;
      }
   }
   if (num_green != 0) {
     for (int i = 0; i <= num_green; i++) {
       int j = index1 + 1 + i;
-      color_array(j) = roygtbv[3];
+      COLOR_ARRAY(j) = roygtbv[3];
       index1 = j;
     }
   }
@@ -274,7 +277,7 @@ uint32_t calcColorShare() {
 /* ----------Spilly Lights---------------*/
 // https://github.com/echobass/Arduino-Projects/blob/master/Hat-Jewel/Hat-Jewel.ino
 
-// todo set these as def vars
+// todo set these as def vars, use DimColor, these may be hella bright
 const uint32_t roygtbv[] = {
   pixels.Color(255, 0, 0, 0), // Red
   pixels.Color(255, 102, 34, 0), // Orange
