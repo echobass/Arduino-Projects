@@ -24,7 +24,6 @@
 
 // Lights
 #define JEWEL_PIN 0;
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(7, JEWEL_PIN, NEO_GRBW + NEO_KHZ800);
 #define DRAW_WAIT 1;
 #define DRAW_CYCLES 20;
 
@@ -43,6 +42,7 @@ Adafruit_NeoPixel pixels = Adafruit_NeoPixel(7, JEWEL_PIN, NEO_GRBW + NEO_KHZ800
 int BLUE_DIST = 0;  // set broadcasting color to 0
 int RED_DIST = 99; // init other colors 
 int GREEN_DIST = 99;
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(7, JEWEL_PIN, NEO_GRBW + NEO_KHZ800);
 uint32_t COLOR_ARRAY[pixels.numPixels()];
 
 
