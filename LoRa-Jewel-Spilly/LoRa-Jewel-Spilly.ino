@@ -1,15 +1,132 @@
+#include <SPI.h>
+#include <RH_RF95.h>
 #include <Adafruit_NeoPixel.h>
- 
+
+#define RFM95_CS      8
+#define RFM95_INT     3
+#define RFM95_RST     4
+#define BOARD_LED     13
+
 #define JEWEL_PIN 0
- 
+
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(7, JEWEL_PIN, NEO_GRBW + NEO_KHZ800);
- 
+
+//RH_RF95 rf95;
+RH_RF95 rf95(RFM95_CS, RFM95_INT);
+
 void setup() {
+  
+  Serial.begin(9600);
+  while (!Serial) ; // Wait for serial port to be available
+  
   pixels.begin();
   pixels.setBrightness(20);
+  
+  if (!rf95.init()) {
+    Serial.println("init failed");
+  }
+
+  /*
+  pinMode(RFM69_RST, OUTPUT);
+  digitalWrite(RFM69_RST, LOW);
+ 
+  Serial.println("Feather RFM69 RX Test!");
+  Serial.println();
+ 
+  // manual reset
+  digitalWrite(RFM69_RST, HIGH);
+  delay(10);
+  digitalWrite(RFM69_RST, LOW);
+  delay(10);
+
+  if (!rf69.init()) {
+    Serial.println("RFM69 radio init failed");
+    while (1);
+  }
+  Serial.println("RFM69 radio init OK!");
+  
+  // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM (for low power module)
+  // No encryption
+  if (!rf69.setFrequency(RF69_FREQ)) {
+    Serial.println("setFrequency failed");
+  }
+ 
+  // If you are using a high power RF69 eg RFM69HW, you *must* set a Tx power with the
+  // ishighpowermodule flag set like this:
+  rf69.setTxPower(14, true);  // range from 14-20 for power, 2nd arg must be true for 69HCW
+ 
+  The encryption key has to be the same as the one in the server
+  uint8_t key[] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+                    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
+  rf69.setEncryptionKey(key);
+  */
+  Serial.println("inited");
+}
+
+void colours(uint32_t colors[]) {
+  for (int led = 0; led < pixels.numPixels(); led++) {
+    pixels.setPixelColor(led, colors[led % 2]); // 2 = Length of colors...
+  }
+  pixels.show();
+}
+
+void send(uint32_t color) {
+  //rf95.send((uint8_t*)color, sizeof(color));
+  rf95.send((uint8_t*)color, 0);
+  rf95.waitPacketSent();
+}
+
+uint32_t receive() {
+  if (rf95.waitAvailableTimeout(100)) {
+    // Should be a message for us now   
+    //uint32_t buf[sizeof()];
+    //uint8_t len = sizeof(buf);
+    //uint8_t color[4];
+    uint32_t color;
+    uint8_t len = sizeof(color);
+    
+    if (rf95.recv((uint8_t*)color, &len)) {
+      Serial.print("Received: ");
+      Serial.println((uint32_t)color);
+      return (uint32_t)color;
+    }
+  }
+  return pixels.Color(51, 221, 0);
 }
  
 void loop() {
+  Serial.println("looping");
+  uint32_t red = pixels.Color(255, 0, 0); // Red
+  uint32_t blue = pixels.Color(17, 70, 255); // Blue
+  
+  uint32_t myColor = red;
+  Serial.println("sending");
+  send(myColor);
+  Serial.println("sent");
+
+  /*
+  float* total = malloc(8 * sizeof(float)); // array to hold the result
+  
+  memcpy(total,     x, 4 * sizeof(float)); // copy 4 floats from x to total[0]...total[3]
+  memcpy(total + 4, y, 4 * sizeof(float)); // copy 4 floats from y to total[4]...total[7]
+  */
+  
+  uint32_t color = receive(); // 4
+  uint32_t colors[] = {myColor, color}; // 8
+
+
+  /*
+  uint32_t* allColors = malloc((sizeof(colors)+1)* sizeof(uint32_t));
+  memcpy(allColors, colors, sizeof(colors)*sizeof(uint32_t));
+  memcpy(allColors+sizeof(colors), myColor, sizeof(uint32_t));
+  */
+
+  colours(colors);
+  Serial.println("drawn");
+  
+
+
+  /*
   rainbowScanner(80, 1, 16, false, 0.02);
   prismRainbowCycle(1, 20); // Fast prism, 20 cycles
   prismRainbow(10, 2);
@@ -57,6 +174,7 @@ void loop() {
   rainbowScanner(60, 1, 32, true, 0.2);
   prismRainbowCycle(1, 20);
   ringRainbow(8, 1);
+  */
 }
 
 void prismRainbowCycle(uint8_t wait, uint32_t cycles) {
